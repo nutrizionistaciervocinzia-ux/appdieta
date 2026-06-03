@@ -81,6 +81,12 @@
     --color-veg-bg:  rgba(16, 185, 129, 0.15);
     --color-fat-bg:  rgba(236, 72, 153, 0.15);
   }
+  
+  body {
+    background: linear-gradient(-45deg, #1a0616, #2d0a22, #3c0c2a, #1a0616);
+    background-size: 400% 400%;
+    animation: meshGradient 18s ease infinite;
+  }
 }
 
 /* ────────────────────────────────
@@ -88,9 +94,17 @@
 ──────────────────────────────── */
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
+@keyframes meshGradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
 body {
   font-family: var(--font-sans);
-  background: var(--bg-gradient);
+  background: linear-gradient(-45deg, #fff0f7, #fce4f0, #ffd6ec, #ffeaf5);
+  background-size: 400% 400%;
+  animation: meshGradient 18s ease infinite;
   background-attachment: fixed;
   color: var(--text-main);
   min-height: 100vh;
@@ -104,8 +118,8 @@ body::before {
   content: '';
   position: fixed;
   inset: 0;
-  background-image: radial-gradient(circle, rgba(214,51,132,0.04) 1px, transparent 1px);
-  background-size: 28px 28px;
+  background-image: radial-gradient(circle, rgba(214,51,132,0.05) 1px, transparent 1px);
+  background-size: 32px 32px;
   pointer-events: none;
   z-index: 0;
 }

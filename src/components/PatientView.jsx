@@ -19,7 +19,8 @@ import {
   Trophy,
   Menu,
   X,
-  LogOut
+  LogOut,
+  Home
 } from 'lucide-react';
 
 const liberaDieteChallenges = [
@@ -250,7 +251,7 @@ export default function PatientView({ patients, onUpdatePatientSelections, onUpd
   const [activeMealTab, setActiveMealTab] = useState("pranzo"); // "pranzo" o "cena"
 
   // Sotto-Scheda attiva nell'Area Paziente
-  const [activeSubTab, setActiveSubTab] = useState('diario'); // 'diario' o 'ai'
+  const [activeSubTab, setActiveSubTab] = useState('home'); // 'home', 'diario' (piatto), 'ai', 'progressi', 'mindful'
 
   // Stato per la chat dell'Assistente AI
   const [chatMessages, setChatMessages] = useState([]);
@@ -1570,6 +1571,72 @@ Contesto:
         <div>
           
           {/* Container Principale per le viste */}
+
+          {activeSubTab === 'home' && (
+            <div style={{ animation: 'modalSlide 0.4s cubic-bezier(0.16, 1, 0.3, 1)' }}>
+              
+              {/* Benvenuto e Quote */}
+              <div style={{ padding: '2rem 1.5rem', textAlign: 'center', marginBottom: '1rem' }}>
+                <div style={{ 
+                  width: '80px', height: '80px', borderRadius: '50%', background: 'rgba(255,255,255,0.3)', backdropFilter: 'blur(10px)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.25rem auto',
+                  boxShadow: '0 8px 32px rgba(214, 51, 132, 0.15)', border: '1px solid rgba(255,255,255,0.4)',
+                  fontSize: '2.5rem', animation: 'heartbeat 2s infinite ease-in-out'
+                }}>
+                  🌸
+                </div>
+                <h1 style={{ fontSize: '2.2rem', fontWeight: 800, color: 'var(--text-main)', marginBottom: '0.5rem', letterSpacing: '-0.5px' }}>
+                  Buongiorno, {patient.name}!
+                </h1>
+                <p style={{ fontSize: '1rem', color: 'var(--text-muted)', maxWidth: '300px', margin: '0 auto', lineHeight: 1.5 }}>
+                  "Nutri il tuo corpo con amore, non con regole."
+                </p>
+              </div>
+
+              {/* Gamification / Streak */}
+              <div className="glass-card" style={{ margin: '0 1.5rem 1.5rem 1.5rem', padding: '1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div>
+                  <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--primary)', margin: 0 }}>La tua Striscia</h3>
+                  <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', margin: '0.2rem 0 0 0' }}>Giorni in armonia</p>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <span style={{ fontSize: '2rem' }}>🔥</span>
+                  <span style={{ fontSize: '1.8rem', fontWeight: 900, color: '#f97316' }}>4</span>
+                </div>
+              </div>
+
+              {/* Quick Actions */}
+              <div style={{ padding: '0 1.5rem', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '2rem' }}>
+                <button 
+                  onClick={() => setActiveSubTab('diario')}
+                  className="glass-card" 
+                  style={{ all: 'unset', padding: '1.5rem', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', cursor: 'pointer', background: 'rgba(255,255,255,0.5)', border: '1px solid rgba(255,255,255,0.6)', borderRadius: '24px', transition: 'all 0.3s ease' }}
+                >
+                  <ChefHat size={36} color="var(--primary)" style={{ marginBottom: '1rem' }} />
+                  <span style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--text-main)' }}>Crea Piatto</span>
+                </button>
+                <button 
+                  onClick={() => setActiveSubTab('ai')}
+                  className="glass-card" 
+                  style={{ all: 'unset', padding: '1.5rem', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', cursor: 'pointer', background: 'rgba(255,255,255,0.5)', border: '1px solid rgba(255,255,255,0.6)', borderRadius: '24px', transition: 'all 0.3s ease' }}
+                >
+                  <Sparkles size={36} color="var(--primary)" style={{ marginBottom: '1rem' }} />
+                  <span style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--text-main)' }}>Chef AI</span>
+                </button>
+              </div>
+
+              {/* Trofei sbloccati */}
+              <div style={{ padding: '0 1.5rem 6rem 1.5rem' }}>
+                <h3 style={{ fontSize: '1.05rem', fontWeight: 800, marginBottom: '1rem', color: 'var(--text-main)' }}>I tuoi Badge</h3>
+                <div style={{ display: 'flex', gap: '1rem', overflowX: 'auto', paddingBottom: '1rem' }}>
+                  <div style={{ width: '70px', height: '70px', flexShrink: 0, borderRadius: '50%', background: 'linear-gradient(135deg, #fde047 0%, #f59e0b 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.8rem', boxShadow: '0 4px 12px rgba(245, 158, 11, 0.3)', border: '2px solid #fff' }}>🏆</div>
+                  <div style={{ width: '70px', height: '70px', flexShrink: 0, borderRadius: '50%', background: 'linear-gradient(135deg, #86efac 0%, #10b981 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.8rem', boxShadow: '0 4px 12px rgba(16, 185, 129, 0.3)', border: '2px solid #fff' }}>🌟</div>
+                  <div style={{ width: '70px', height: '70px', flexShrink: 0, borderRadius: '50%', background: 'rgba(255,255,255,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', border: '2px dashed rgba(255,255,255,0.8)', opacity: 0.6 }}>🔒</div>
+                </div>
+              </div>
+
+            </div>
+          )}
 
           {activeSubTab === 'diario' && (
             <div>
@@ -4106,8 +4173,12 @@ Contesto:
           borderTopLeftRadius: '24px',
           borderTopRightRadius: '24px'
         }}>
+          <button onClick={() => setActiveSubTab('home')} style={{ all: 'unset', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', color: activeSubTab === 'home' ? 'var(--primary)' : 'var(--text-muted)' }}>
+            <Home size={22} strokeWidth={activeSubTab === 'home' ? 2.5 : 2} />
+            <span style={{ fontSize: '0.7rem', fontWeight: activeSubTab === 'home' ? 700 : 500 }}>Home</span>
+          </button>
           <button onClick={() => setActiveSubTab('diario')} style={{ all: 'unset', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', color: activeSubTab === 'diario' ? 'var(--primary)' : 'var(--text-muted)' }}>
-            <Calendar size={22} strokeWidth={activeSubTab === 'diario' ? 2.5 : 2} />
+            <ChefHat size={22} strokeWidth={activeSubTab === 'diario' ? 2.5 : 2} />
             <span style={{ fontSize: '0.7rem', fontWeight: activeSubTab === 'diario' ? 700 : 500 }}>Piatto</span>
           </button>
           <button onClick={() => setActiveSubTab('ai')} style={{ all: 'unset', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', color: activeSubTab === 'ai' ? 'var(--primary)' : 'var(--text-muted)' }}>
@@ -4115,7 +4186,7 @@ Contesto:
             <span style={{ fontSize: '0.7rem', fontWeight: activeSubTab === 'ai' ? 700 : 500 }}>Chat AI</span>
           </button>
           <button onClick={() => setActiveSubTab('progressi')} style={{ all: 'unset', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', color: activeSubTab === 'progressi' ? 'var(--primary)' : 'var(--text-muted)' }}>
-            <Activity size={22} strokeWidth={activeSubTab === 'progressi' ? 2.5 : 2} />
+            <Heart size={22} strokeWidth={activeSubTab === 'progressi' ? 2.5 : 2} />
             <span style={{ fontSize: '0.7rem', fontWeight: activeSubTab === 'progressi' ? 700 : 500 }}>Diario</span>
           </button>
           <button onClick={() => setActiveSubTab('mindful')} style={{ all: 'unset', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', color: activeSubTab === 'mindful' ? 'var(--primary)' : 'var(--text-muted)' }}>
