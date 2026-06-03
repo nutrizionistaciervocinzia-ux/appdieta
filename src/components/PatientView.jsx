@@ -1611,7 +1611,7 @@ Contesto:
                 {/* Card Pasto di Oggi */}
                 <div style={{ padding: '0 1.5rem', marginBottom: '1.25rem' }}>
                   <h2 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.06em', fontSize: '0.8rem' }}>
-                    Il tuo pranzo di oggi
+                    Il tuo piano di oggi
                   </h2>
                   {todayDietDay ? (
                     <button
@@ -1685,6 +1685,31 @@ Contesto:
                     </div>
                     <ChevronRight size={18} color="var(--text-muted)" style={{ flexShrink: 0 }} />
                   </button>
+                </div>
+
+                {/* Brand Card Professionale */}
+                <div style={{ padding: '1.25rem 1.5rem 0 1.5rem' }}>
+                  <div style={{
+                    background: 'linear-gradient(135deg, var(--primary) 0%, #b0246e 100%)',
+                    borderRadius: '20px',
+                    padding: '1.5rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '1rem',
+                    boxShadow: '0 8px 24px rgba(214, 51, 132, 0.25)'
+                  }}>
+                    <div style={{ width: '52px', height: '52px', borderRadius: '14px', background: 'rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.6rem', flexShrink: 0 }}>
+                      🩺
+                    </div>
+                    <div>
+                      <p style={{ fontWeight: 800, fontSize: '1rem', color: '#fff', margin: 0, marginBottom: '0.2rem' }}>
+                        Libera dalle Diete
+                      </p>
+                      <p style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.85)', margin: 0 }}>
+                        Dott.ssa Ciervo Cinzia — Biologa Nutrizionista
+                      </p>
+                    </div>
+                  </div>
                 </div>
 
               </div>
@@ -2289,7 +2314,7 @@ Contesto:
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '0.75rem' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--primary)' }}>
                     <ChefHat size={20} />
-                    <h3 style={{ fontSize: '1.1rem', fontWeight: 700, margin: 0 }}>Piatto Principale</h3>
+                    <h3 style={{ fontSize: '1.1rem', fontWeight: 700, margin: 0 }}>Piano Alimentare</h3>
                   </div>
                   
                   {/* Toggle Tab Pranzo/Cena */}
@@ -2446,7 +2471,7 @@ Contesto:
 
                   {/* Dettagli statici ed informazioni a fianco del piatto */}
                   <div style={{ padding: '0 0.5rem' }}>
-                    <h4 style={{ color: 'var(--primary)', marginBottom: '0.5rem', fontSize: '1rem', fontWeight: 700 }}>Riepilogo Piatto</h4>
+                    <h4 style={{ color: 'var(--primary)', marginBottom: '0.5rem', fontSize: '1rem', fontWeight: 700 }}>Riepilogo Piano</h4>
                     <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '1.25rem', lineHeight: 1.4 }}>
                       Personalizza il pranzo o la cena selezionando le alternative approvate dal tuo piano nutrizionale.
                     </p>
@@ -4229,7 +4254,7 @@ Contesto:
         }}>
           {[
             { id: 'home', icon: <Home size={24} />, label: 'Home' },
-            { id: 'diario', icon: <ChefHat size={24} />, label: 'Piatto' },
+            { id: 'diario', icon: <ChefHat size={24} />, label: 'Piano' },
             { id: 'ai', icon: <Sparkles size={24} />, label: 'Chef AI' },
             { id: 'progressi', icon: <Heart size={24} />, label: 'Diario' },
           ].map(tab => (

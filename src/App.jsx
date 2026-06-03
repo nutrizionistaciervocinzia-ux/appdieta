@@ -371,20 +371,19 @@ export default function App() {
       
       {/* Header Premium con Glassmorphism */}
       <header>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.1rem' }}>
-          <div className="logo">
-            <Heart className="logo-icon" size={24} fill="currentColor" />
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.05rem' }}>
+          <div className="logo" style={{ fontSize: '1.25rem' }}>
+            <Heart className="logo-icon" size={20} fill="currentColor" />
             <span>Libera dalle Diete</span>
           </div>
           <span style={{
-            fontSize: '0.72rem',
+            fontSize: '0.7rem',
             fontWeight: 600,
-            color: 'var(--primary)',
-            letterSpacing: '0.04em',
-            opacity: 0.75,
+            color: 'var(--text-muted)',
+            letterSpacing: '0.02em',
             paddingLeft: '0.25rem'
           }}>
-            🩺 Dott.ssa Ciervo Cinzia — Biologa Nutrizionista
+            Dott.ssa Ciervo Cinzia — Biologa Nutrizionista
           </span>
         </div>
         
