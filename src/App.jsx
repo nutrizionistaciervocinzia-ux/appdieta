@@ -1,46 +1,14 @@
 import { useState, useEffect } from 'react';
-import { Heart, Users, User, LogOut } from 'lucide-react';
+import { Heart, Users, User, LogOut, Loader2 } from 'lucide-react';
 import Dashboard from './components/Dashboard';
 import PatientView from './components/PatientView';
-import { MOCK_PATIENTS } from './utils/mockData';
+import { supabase } from './utils/supabaseClient';
 
 export default function App() {
-  const [patients, setPatients] = useState(() => {
-    let initial;
-    try {
-      const saved = localStorage.getItem('liberadiete_patients');
-      initial = saved ? JSON.parse(saved) : MOCK_PATIENTS;
-      if (!Array.isArray(initial)) {
-        initial = MOCK_PATIENTS;
-      }
-    } catch (e) {
-      console.error("Errore nel parsing dei pazienti da localStorage:", e);
-      initial = MOCK_PATIENTS;
-    }
-    let changed = false;
-    const updated = initial.map((p, idx, self) => {
-      const isDuplicate = self.slice(0, idx).some(other => other.pin === p.pin);
-      if (!p.pin || isDuplicate) {
-        const existingPins = new Set(
-          self.map((x, i) => i !== idx ? x.pin : null).filter(Boolean)
-        );
-        let pin;
-        do {
-          pin = Math.floor(1000 + Math.random() * 9000).toString();
-        } while (existingPins.has(pin));
-        changed = true;
-        return { ...p, pin };
-      }
-      return p;
-    });
-    if (changed) {
-      localStorage.setItem('liberadiete_patients', JSON.stringify(updated));
-    }
-    return updated;
-  });
+  const [patients, setPatients] = useState([]);
+  const [isLoadingPatients, setIsLoadingPatients] = useState(true);
 
   const [currentView, setCurrentView] = useState('patient'); // 'dashboard' o 'patient'
-  const [isMobileSimulator, setIsMobileSimulator] = useState(false);
 
   // Stato per l'autenticazione
   const [userRole, setUserRole] = useState(() => {
@@ -56,10 +24,78 @@ export default function App() {
   const [loginPasswordInput, setLoginPasswordInput] = useState('');
   const [loginError, setLoginError] = useState('');
 
-  // Persistenza nel localStorage ad ogni modifica dei pazienti
+  // Fetch dei pazienti da Supabase all'avvio
   useEffect(() => {
-    localStorage.setItem('liberadiete_patients', JSON.stringify(patients));
-  }, [patients]);
+    const fetchPatients = async () => {
+      setIsLoadingPatients(true);
+      const { data, error } = await supabase.from('patients').select('*');
+      
+      if (error) {
+        console.error("Errore fetch Supabase:", error);
+      } else if (data) {
+        const mapped = data.map(d => ({
+          id: d.id,
+          name: d.name,
+          surname: d.surname,
+          pin: d.pin,
+          age: d.age,
+          gender: d.gender,
+          height: d.height,
+          weight: d.weight,
+          notes: d.notes,
+          nextCheckupDate: d.next_checkup_date,
+          history: d.history || [],
+          bia: d.bia || {},
+          diet: d.diet || {},
+          selections: d.selections || {}
+        }));
+        setPatients(mapped);
+      }
+      setIsLoadingPatients(false);
+    };
+
+    fetchPatients();
+  }, []);
+
+  // Helper per salvare un paziente su Supabase
+  const syncPatientToSupabase = async (p) => {
+    const dbPatient = {
+      id: p.id,
+      name: p.name,
+      surname: p.surname,
+      pin: p.pin,
+      age: p.age,
+      gender: p.gender,
+      height: p.height,
+      weight: p.weight,
+      notes: p.notes,
+      next_checkup_date: p.nextCheckupDate,
+      history: p.history || [],
+      bia: p.bia || {},
+      diet: p.diet || {},
+      selections: p.selections || {}
+    };
+    
+    const { error } = await supabase.from('patients').upsert(dbPatient);
+    if (error) {
+      console.error("Errore salvataggio Supabase per il paziente", p.id, ":", error);
+    }
+  };
+
+  // Helper per aggiornare lo stato locale e triggerare il sync
+  const updatePatientState = (patientId, updater) => {
+    setPatients(prev => {
+      const newPatients = prev.map(p => {
+        if (p.id === patientId) {
+          const updated = updater(p);
+          syncPatientToSupabase(updated);
+          return updated;
+        }
+        return p;
+      });
+      return newPatients;
+    });
+  };
 
   // Funzione per generare un PIN unico
   const generateUniquePin = (currentPatients, skipPatientId = '') => {
@@ -79,119 +115,66 @@ export default function App() {
     return pin;
   };
 
-
-
-  // Aggiunta di un nuovo paziente con PIN automatico e sempre unico
+  // Aggiunta di un nuovo paziente
   const handleAddPatient = (newPatient) => {
     const pin = generateUniquePin(patients);
-    setPatients(prev => [{ ...newPatient, pin }, ...prev]);
+    const p = { ...newPatient, pin };
+    setPatients(prev => [p, ...prev]);
+    syncPatientToSupabase(p);
   };
 
   // Aggiornamento della dieta per un paziente
   const handleUpdatePatientDiet = (patientId, newDiet) => {
-    setPatients(prev => prev.map(p => {
-      if (p.id === patientId) {
-        return {
-          ...p,
-          diet: newDiet,
-          // Quando la dieta cambia, azzeriamo le scelte del calendario per evitare conflitti di ID
-          selections: {}
-        };
-      }
-      return p;
-    }));
+    updatePatientState(patientId, p => ({ ...p, diet: newDiet, selections: {} }));
   };
 
   // Aggiornamento delle scelte del calendario per un paziente
   const handleUpdatePatientSelections = (patientId, newSelections) => {
-    setPatients(prev => prev.map(p => {
-      if (p.id === patientId) {
-        return {
-          ...p,
-          selections: newSelections
-        };
-      }
-      return p;
-    }));
+    updatePatientState(patientId, p => ({ ...p, selections: newSelections }));
   };
 
   // Aggiornamento dei dati BIA per un paziente
   const handleUpdatePatientBia = (patientId, newBia) => {
-    setPatients(prev => prev.map(p => {
-      if (p.id === patientId) {
-        return {
-          ...p,
-          bia: newBia
-        };
-      }
-      return p;
-    }));
+    updatePatientState(patientId, p => ({ ...p, bia: newBia }));
   };
 
   // Aggiornamento dei dati anagrafici/fisiologici generali del paziente
   const handleUpdatePatientProfile = (patientId, updatedFields) => {
-    setPatients(prev => prev.map(p => {
-      if (p.id === patientId) {
-        return {
-          ...p,
-          ...updatedFields
-        };
-      }
-      return p;
-    }));
+    updatePatientState(patientId, p => ({ ...p, ...updatedFields }));
   };
 
   // Aggiornamento del PIN per un paziente
   const handleUpdatePatientPin = (patientId, newPin) => {
-    setPatients(prev => prev.map(p => {
-      if (p.id === patientId) {
-        return {
-          ...p,
-          pin: newPin
-        };
-      }
-      return p;
-    }));
+    updatePatientState(patientId, p => ({ ...p, pin: newPin }));
   };
 
   // Aggiornamento dello storico Peso/BIA per un paziente
   const handleUpdatePatientHistory = (patientId, newHistory) => {
-    setPatients(prev => prev.map(p => {
-      if (p.id === patientId) {
-        const sortedHistory = [...newHistory].sort((a, b) => new Date(a.date) - new Date(b.date));
-        const latestRecord = sortedHistory[sortedHistory.length - 1];
-        
-        let updatedBia = p.bia || {};
-        if (latestRecord) {
-          updatedBia = {
-            ...updatedBia,
-            fatMass: latestRecord.fatMass,
-            muscleMass: latestRecord.muscleMass
-          };
-        }
-
-        return {
-          ...p,
-          history: sortedHistory,
-          weight: latestRecord ? latestRecord.weight : p.weight,
-          bia: updatedBia
+    updatePatientState(patientId, p => {
+      const sortedHistory = [...newHistory].sort((a, b) => new Date(a.date) - new Date(b.date));
+      const latestRecord = sortedHistory[sortedHistory.length - 1];
+      
+      let updatedBia = p.bia || {};
+      if (latestRecord) {
+        updatedBia = {
+          ...updatedBia,
+          fatMass: latestRecord.fatMass,
+          muscleMass: latestRecord.muscleMass
         };
       }
-      return p;
-    }));
+
+      return {
+        ...p,
+        history: sortedHistory,
+        weight: latestRecord ? latestRecord.weight : p.weight,
+        bia: updatedBia
+      };
+    });
   };
 
   // Aggiornamento del prossimo controllo per un paziente
   const handleUpdatePatientNextCheckup = (patientId, nextCheckupDate) => {
-    setPatients(prev => prev.map(p => {
-      if (p.id === patientId) {
-        return {
-          ...p,
-          nextCheckupDate
-        };
-      }
-      return p;
-    }));
+    updatePatientState(patientId, p => ({ ...p, nextCheckupDate }));
   };
 
   // Gestione del Submit del Login
@@ -357,8 +340,20 @@ export default function App() {
               </div>
             )}
 
-            <button type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: '1.8rem', padding: '0.75rem', borderRadius: '24px' }}>
-              Accedi all'App
+            <button 
+              type="submit" 
+              className="btn btn-primary" 
+              style={{ width: '100%', marginTop: '1.8rem', padding: '0.75rem', borderRadius: '24px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.5rem' }}
+              disabled={isLoadingPatients}
+            >
+              {isLoadingPatients ? (
+                <>
+                  <Loader2 className="animate-spin" size={20} />
+                  Caricamento dati...
+                </>
+              ) : (
+                "Accedi all'App"
+              )}
             </button>
           </form>
         </div>
@@ -372,7 +367,7 @@ export default function App() {
     : patients;
 
   const appContent = (
-    <div style={{ display: 'flex', flexDirection: 'column', minHeight: isMobileSimulator ? '100%' : '100vh' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       
       {/* Header Premium con Glassmorphism */}
       <header>
@@ -413,19 +408,6 @@ export default function App() {
                 Dashboard Medico
               </button>
             </div>
-          )}
-
-          {/* Simulatore iPhone Button - Nascosto se siamo già dentro l'iframe */}
-          {window.self === window.top && (
-            <button 
-              className={`btn btn-sm ${isMobileSimulator ? 'btn-primary' : 'btn-outline'}`}
-              onClick={() => setIsMobileSimulator(!isMobileSimulator)}
-              title="Simulatore iPhone"
-              style={{ padding: '0.4rem 0.7rem', display: 'flex', gap: '0.35rem', alignItems: 'center', borderRadius: '12px' }}
-            >
-              <span style={{ fontSize: '1rem' }}>📱</span>
-              {isMobileSimulator ? 'Esci iPhone' : 'Simula iPhone'}
-            </button>
           )}
 
           {/* Nome utente o ruolo loggato */}
@@ -492,65 +474,6 @@ export default function App() {
 
     </div>
   );
-
-  if (isMobileSimulator) {
-    return (
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        minHeight: '100vh',
-        backgroundColor: '#111827',
-        backgroundImage: 'radial-gradient(circle at center, #1f2937 0%, #111827 100%)',
-        padding: '2rem'
-      }}>
-        {/* L'iPhone */}
-        <div style={{
-          width: '390px',
-          height: '844px',
-          backgroundColor: '#fff',
-          borderRadius: '55px',
-          boxShadow: '0 25px 60px rgba(0,0,0,0.8), inset 0 0 0 12px #000, inset 0 0 0 14px #222',
-          position: 'relative',
-          overflow: 'hidden',
-          display: 'flex',
-          flexDirection: 'column'
-        }}>
-          {/* Dynamic Island */}
-          <div style={{
-            position: 'absolute',
-            top: '22px',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            width: '125px',
-            height: '35px',
-            backgroundColor: '#000',
-            borderRadius: '24px',
-            zIndex: 9999,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            padding: '0 12px'
-          }}>
-             <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#111' }}></div>
-             <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#111', boxShadow: 'inset 0px 0px 4px #000, inset 0px 0px 1px #fff' }}></div>
-          </div>
-
-          <div style={{ 
-            flex: 1, 
-            overflow: 'hidden',
-            backgroundColor: 'var(--bg-gradient)' 
-          }}>
-            <iframe 
-              src={window.location.origin + window.location.pathname + '?sim=8'} 
-              style={{ width: '100%', height: '100%', border: 'none' }}
-              title="iPhone Simulator"
-            />
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return appContent;
 }

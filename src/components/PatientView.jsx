@@ -16,7 +16,10 @@ import {
   Brain,
   Wind,
   CheckCircle,
-  Trophy
+  Trophy,
+  Menu,
+  X,
+  LogOut
 } from 'lucide-react';
 
 const liberaDieteChallenges = [
@@ -256,15 +259,11 @@ export default function PatientView({ patients, onUpdatePatientSelections, onUpd
   const [chatCountToday, setChatCountToday] = useState(0);
   const messagesEndRef = useRef(null);
   const calendarScrollRef = useRef(null);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  // Stato per la chiave API Google Gemini (AI reale)
-  const [geminiApiKey, setGeminiApiKey] = useState(() => {
-    return localStorage.getItem('nutriplan_gemini_api_key') || '';
-  });
+  // Chiave API da Variabile d'Ambiente (Nascosta all'utente)
+  const geminiApiKey = import.meta.env.VITE_GEMINI_API_KEY || '';
   const [showSettings, setShowSettings] = useState(false);
-  const [apiKeyInput, setApiKeyInput] = useState(() => {
-    return localStorage.getItem('nutriplan_gemini_api_key') || '';
-  });
   const [geminiModel, setGeminiModel] = useState(() => {
     return localStorage.getItem('nutriplan_gemini_model') || 'gemini-2.5-flash';
   });
@@ -1416,8 +1415,90 @@ Contesto:
   const hasDiet = diet && Object.values(diet).some(arr => arr.length > 0);
 
   return (
-    <div className="patient-view" style={{ animation: 'modalSlide 0.4s ease' }}>
+    <div className="patient-view" style={{ animation: 'modalSlide 0.4s ease', paddingBottom: '90px' }}>
       
+      {/* Header Mobile con Hamburger */}
+      {isPatientLogged && (
+        <div style={{ position: 'relative', zIndex: 100 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem', marginBottom: '1rem', background: '#fff', borderRadius: '16px', boxShadow: '0 2px 10px rgba(0,0,0,0.05)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+              <div style={{
+                width: '40px', height: '40px', borderRadius: '50%',
+                background: 'linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%)',
+                color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontWeight: 800, fontSize: '1.2rem', boxShadow: '0 3px 10px rgba(214,51,132,0.22)'
+              }}>
+                {patient?.name?.[0]?.toUpperCase() || 'P'}
+              </div>
+              <div>
+                <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'block' }}>Benvenuta/o</span>
+                <h2 style={{ fontSize: '1.1rem', fontWeight: 800, margin: 0, color: 'var(--text-main)' }}>{patient?.name}</h2>
+              </div>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <button style={{ all: 'unset', cursor: 'pointer', padding: '0.5rem' }} onClick={() => setActiveSubTab('chatDoc')}>
+                <div style={{ position: 'relative' }}>
+                  <Send size={22} style={{ color: 'var(--text-muted)' }} />
+                  {patient?.messages?.some(m => m.sender === 'doctor' && !m.read) && (
+                    <span style={{
+                      position: 'absolute', top: '-6px', right: '-6px', background: 'var(--danger)', color: '#fff',
+                      borderRadius: '50%', width: '16px', height: '16px', fontSize: '0.6rem', display: 'flex',
+                      alignItems: 'center', justifyContent: 'center', fontWeight: 'bold'
+                    }}>
+                      {patient.messages.filter(m => m.sender === 'doctor' && !m.read).length}
+                    </span>
+                  )}
+                </div>
+              </button>
+              <button style={{ all: 'unset', cursor: 'pointer', padding: '0.5rem' }} onClick={() => setIsMenuOpen(!isMenuOpen)}>
+                {isMenuOpen ? <X size={24} style={{ color: 'var(--text-main)' }} /> : <Menu size={24} style={{ color: 'var(--text-main)' }} />}
+              </button>
+            </div>
+          </div>
+          
+          {/* Menu a tendina */}
+          {isMenuOpen && (
+            <div style={{
+              position: 'absolute', top: '100%', right: 0, marginTop: '0.5rem',
+              background: '#fff', borderRadius: '16px', boxShadow: '0 10px 25px rgba(0,0,0,0.1)',
+              padding: '0.5rem', width: '220px', zIndex: 101, border: '1px solid var(--border-soft)',
+              animation: 'slideDown 0.2s ease'
+            }}>
+              <div style={{ padding: '0.75rem 1rem', borderBottom: '1px solid var(--border-soft)', marginBottom: '0.5rem' }}>
+                <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-muted)' }}>Menu Paziente</span>
+              </div>
+              <button 
+                onClick={() => { setIsMenuOpen(false); setActiveSubTab('chatDoc'); }}
+                style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem 1rem', borderRadius: '8px', border: 'none', background: 'transparent', textAlign: 'left', fontSize: '0.9rem', color: 'var(--text-main)', cursor: 'pointer' }}
+              >
+                <Send size={18} style={{ color: 'var(--primary)' }} />
+                Messaggi Dottoressa
+              </button>
+              <button 
+                onClick={() => {
+                  setIsMenuOpen(false);
+                  alert("Impostazioni profilo (Mock) - Questa funzione sarà disponibile a breve!");
+                }}
+                style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem 1rem', borderRadius: '8px', border: 'none', background: 'transparent', textAlign: 'left', fontSize: '0.9rem', color: 'var(--text-main)', cursor: 'pointer' }}
+              >
+                <Layers size={18} style={{ color: 'var(--primary)' }} />
+                Il mio Profilo
+              </button>
+              <button 
+                onClick={() => {
+                  setIsMenuOpen(false);
+                  window.location.reload(); // Logout grezzo simulato
+                }}
+                style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem 1rem', borderRadius: '8px', border: 'none', background: 'rgba(239, 68, 68, 0.05)', textAlign: 'left', fontSize: '0.9rem', color: 'var(--danger)', cursor: 'pointer', marginTop: '0.5rem' }}
+              >
+                <LogOut size={18} />
+                Esci dall'App
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Barra Selettore Paziente per testing - Nascosta se loggato come Paziente */}
       {!isPatientLogged && (
         <div className="glass-card" style={{ padding: '1rem 1.5rem', marginBottom: '2rem', display: 'flex', flexWrap: 'wrap', gap: '1rem', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -1459,94 +1540,12 @@ Contesto:
       ) : (
         <div>
           
-          {/* Sotto-Schede Area Paziente */}
-          <div className="glass-card" style={{ padding: '4px', marginBottom: '2rem', display: 'flex', flexWrap: 'wrap', gap: '0.5rem', background: 'rgba(255, 255, 255, 0.4)', backdropFilter: 'blur(8px)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)' }}>
-            <button 
-              className={`btn btn-sm ${activeSubTab === 'diario' ? 'btn-primary' : 'btn-outline'}`}
-              style={{ flex: 1, minWidth: '120px', padding: '0.8rem', borderRadius: '12px', border: 'none', gap: '0.5rem', transition: 'all 0.3s' }}
-              onClick={() => setActiveSubTab('diario')}
-            >
-              <Calendar size={18} /> Diario & Piatto
-            </button>
-            <button 
-              className={`btn btn-sm ${activeSubTab === 'progressi' ? 'btn-primary' : 'btn-outline'}`}
-              style={{ flex: 1, minWidth: '120px', padding: '0.8rem', borderRadius: '12px', border: 'none', gap: '0.5rem', transition: 'all 0.3s' }}
-              onClick={() => setActiveSubTab('progressi')}
-            >
-              <Activity size={18} /> Progressi & BIA
-            </button>
-            <button 
-              className={`btn btn-sm ${activeSubTab === 'mindful' ? 'btn-primary' : 'btn-outline'}`}
-              style={{ flex: 1, minWidth: '120px', padding: '0.8rem', borderRadius: '12px', border: 'none', gap: '0.5rem', transition: 'all 0.3s' }}
-              onClick={() => setActiveSubTab('mindful')}
-            >
-              <Heart size={18} /> Mindful Eating
-            </button>
-            <button 
-              className={`btn btn-sm ${activeSubTab === 'chatDoc' ? 'btn-primary' : 'btn-outline'}`}
-              style={{ flex: 1, minWidth: '120px', padding: '0.8rem', borderRadius: '12px', border: 'none', gap: '0.5rem', transition: 'all 0.3s', position: 'relative' }}
-              onClick={() => setActiveSubTab('chatDoc')}
-            >
-              <Send size={18} /> Messaggi Dottoressa
-              {patient?.messages?.some(m => m.sender === 'doctor' && !m.read) && (
-                <span style={{ 
-                  position: 'absolute', 
-                  top: '-4px', 
-                  right: '-4px', 
-                  background: 'var(--danger)', 
-                  color: '#fff', 
-                  borderRadius: '50%', 
-                  width: '18px', 
-                  height: '18px', 
-                  fontSize: '0.65rem', 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  justifyContent: 'center',
-                  fontWeight: 'bold',
-                  boxShadow: 'var(--shadow-sm)'
-                }}>
-                  {patient.messages.filter(m => m.sender === 'doctor' && !m.read).length}
-                </span>
-              )}
-            </button>
-            <button 
-              className={`btn btn-sm ${activeSubTab === 'ai' ? 'btn-primary' : 'btn-outline'}`}
-              style={{ flex: 1, minWidth: '120px', padding: '0.8rem', borderRadius: '12px', border: 'none', gap: '0.5rem', transition: 'all 0.3s' }}
-              onClick={() => setActiveSubTab('ai')}
-            >
-              <Sparkles size={18} /> Assistente AI
-            </button>
-          </div>
+          {/* Container Principale per le viste */}
 
           {activeSubTab === 'diario' && (
             <div>
               
-              {/* Saluto Personale in stile Mobile */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.25rem' }}>
-                <div style={{
-                  width: '42px',
-                  height: '42px',
-                  borderRadius: '50%',
-                  background: 'linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%)',
-                  color: '#fff',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontWeight: 800,
-                  fontSize: '1.1rem',
-                  boxShadow: '0 3px 10px rgba(214,51,132,0.22)'
-                }}>
-                  {patient.name[0].toUpperCase()}
-                </div>
-                <div>
-                  <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-                    {getGreeting().emoji} {getGreeting().text}
-                  </span>
-                  <h2 style={{ fontSize: '1.2rem', fontWeight: 800, margin: 0, color: 'var(--text-main)', marginTop: '-2px' }}>
-                    {patient.name}
-                  </h2>
-                </div>
-              </div>
+              {/* Saluto rimossso perché spostato nell'header */}
 
               {/* Card Principale del Piano Alimentare in Rosa Satinato Premium */}
               <div style={{
@@ -3569,92 +3568,7 @@ Contesto:
                   <Sparkles size={22} style={{ color: 'var(--primary-light)' }} />
                   <h3 style={{ fontSize: '1.25rem', margin: 0, fontWeight: 700 }}>Chef Assistente AI</h3>
                 </div>
-                <button 
-                  className="btn btn-outline btn-sm"
-                  style={{ gap: '0.25rem', fontSize: '0.8rem', padding: '0.4rem 0.8rem', display: 'flex', alignItems: 'center' }}
-                  onClick={() => setShowSettings(!showSettings)}
-                >
-                  <span>⚙️</span> {geminiApiKey ? 'Chiave API Attiva' : 'Collega AI Reale'}
-                </button>
               </div>
-
-              {/* Box di configurazione Chiave API */}
-              {showSettings && (
-                <div className="glass-card animate-slide" style={{ padding: '1.25rem', marginBottom: '1.5rem', background: 'var(--bg-primary)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-sm)' }}>
-                  <h4 style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: '0.5rem', color: 'var(--primary)' }}>Configurazione API Key Google Gemini</h4>
-                  <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '1rem', lineHeight: '1.4' }}>
-                    Inserisci la tua API Key Gemini per abilitare l'AI reale. La chiave ed il modello selezionato verranno salvati in modo sicuro nel browser dell'applicazione.
-                  </p>
-                  
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                    <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-                      <input 
-                        type="password" 
-                        className="form-input" 
-                        style={{ flex: 1, minWidth: '220px', fontSize: '0.85rem', padding: '0.5rem' }}
-                        placeholder="Incolla qui la chiave API (es. AIzaSy...)" 
-                        value={apiKeyInput}
-                        onChange={(e) => setApiKeyInput(e.target.value)}
-                      />
-                      <button 
-                        className="btn btn-primary btn-sm"
-                        onClick={() => {
-                          const trimmed = apiKeyInput.trim();
-                          if (trimmed) {
-                            localStorage.setItem('nutriplan_gemini_api_key', trimmed);
-                            setGeminiApiKey(trimmed);
-                            alert("Chiave API Gemini salvata con successo! L'Assistente AI reale è ora attivo.");
-                          } else {
-                            localStorage.removeItem('nutriplan_gemini_api_key');
-                            setGeminiApiKey('');
-                            alert("Chiave API rimossa. L'app tornerà a usare la simulazione locale.");
-                          }
-                          setShowSettings(false);
-                        }}
-                      >
-                        Salva
-                      </button>
-                      {geminiApiKey && (
-                        <button 
-                          className="btn btn-outline btn-sm"
-                          style={{ color: 'var(--danger)', borderColor: 'var(--danger)' }}
-                          onClick={() => {
-                            localStorage.removeItem('nutriplan_gemini_api_key');
-                            setGeminiApiKey('');
-                            setApiKeyInput('');
-                            alert("Chiave API rimossa.");
-                            setShowSettings(false);
-                          }}
-                        >
-                          Rimuovi
-                        </button>
-                      )}
-                    </div>
-
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap', marginTop: '0.25rem' }}>
-                      <label style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-main)' }}>Modello AI:</label>
-                      <select
-                        className="form-input"
-                        style={{ fontSize: '0.85rem', padding: '0.35rem 0.5rem', borderRadius: '4px', minWidth: '200px' }}
-                        value={geminiModel}
-                        onChange={(e) => {
-                          const model = e.target.value;
-                          setGeminiModel(model);
-                          localStorage.setItem('nutriplan_gemini_model', model);
-                        }}
-                      >
-                        <option value="gemini-2.5-flash">Gemini 2.5 Flash (Consigliato)</option>
-                        <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
-                        <option value="gemini-1.5-flash">Gemini 1.5 Flash (Legacy)</option>
-                        <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
-                      </select>
-                    </div>
-                  </div>
-                  <p style={{ fontSize: '0.75rem', marginTop: '0.6rem', color: 'var(--text-muted)', margin: '0.6rem 0 0 0' }}>
-                    Non hai ancora una chiave? Ottienila gratuitamente in pochi istanti su <a href="https://aistudio.google.com/" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--primary)', textDecoration: 'underline', fontWeight: 600 }}>Google AI Studio</a>.
-                  </p>
-                </div>
-              )}
 
               {/* Barra Riepilogo Ingredienti Attivi */}
               <div className="glass-card" style={{ padding: '1.25rem', marginBottom: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.75rem', background: 'var(--primary-bg)' }}>
@@ -3984,12 +3898,12 @@ Contesto:
                 </div>
 
                 {/* Input Bar */}
-                <div className="chat-input-bar">
+                <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.25rem' }}>
                   <input 
                     type="text" 
                     className="form-input" 
                     style={{ flex: 1, borderRadius: '24px', paddingLeft: '1.25rem' }}
-                    placeholder={chatCountToday >= 10 ? "Limite giornaliero raggiunto (10/10)" : "Chiedi ricette, consigli o varianti..."} 
+                    placeholder={chatCountToday >= 10 ? "Limite giornaliero (10/10)" : "Chiedi ricette o varianti..."} 
                     value={chatInput}
                     onChange={(e) => setChatInput(e.target.value)}
                     onKeyDown={(e) => {
@@ -4000,7 +3914,7 @@ Contesto:
                   />
                   <button 
                     className="btn btn-primary" 
-                    style={{ borderRadius: '50%', width: '42px', height: '42px', padding: 0 }}
+                    style={{ flexShrink: 0, minWidth: '42px', borderRadius: '50%', width: '42px', height: '42px', padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                     onClick={() => handleSendChatMessage(chatInput)}
                   >
                     <Send size={16} />
@@ -4087,6 +4001,43 @@ Contesto:
             </div>
           </div>
         </div>
+      )}
+
+      {/* Bottom Navigation */}
+      {patient && (
+        <nav style={{
+          position: 'fixed',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          background: '#ffffff',
+          boxShadow: '0 -4px 20px rgba(0,0,0,0.08)',
+          display: 'flex',
+          justifyContent: 'space-around',
+          padding: '0.8rem 0.5rem',
+          paddingBottom: 'max(0.8rem, env(safe-area-inset-bottom))',
+          zIndex: 1000,
+          borderTop: '1px solid var(--border-color)',
+          borderTopLeftRadius: '24px',
+          borderTopRightRadius: '24px'
+        }}>
+          <button onClick={() => setActiveSubTab('diario')} style={{ all: 'unset', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', color: activeSubTab === 'diario' ? 'var(--primary)' : 'var(--text-muted)' }}>
+            <Calendar size={22} strokeWidth={activeSubTab === 'diario' ? 2.5 : 2} />
+            <span style={{ fontSize: '0.7rem', fontWeight: activeSubTab === 'diario' ? 700 : 500 }}>Piatto</span>
+          </button>
+          <button onClick={() => setActiveSubTab('ai')} style={{ all: 'unset', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', color: activeSubTab === 'ai' ? 'var(--primary)' : 'var(--text-muted)' }}>
+            <Sparkles size={22} strokeWidth={activeSubTab === 'ai' ? 2.5 : 2} />
+            <span style={{ fontSize: '0.7rem', fontWeight: activeSubTab === 'ai' ? 700 : 500 }}>Chat AI</span>
+          </button>
+          <button onClick={() => setActiveSubTab('progressi')} style={{ all: 'unset', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', color: activeSubTab === 'progressi' ? 'var(--primary)' : 'var(--text-muted)' }}>
+            <Activity size={22} strokeWidth={activeSubTab === 'progressi' ? 2.5 : 2} />
+            <span style={{ fontSize: '0.7rem', fontWeight: activeSubTab === 'progressi' ? 700 : 500 }}>Diario</span>
+          </button>
+          <button onClick={() => setActiveSubTab('mindful')} style={{ all: 'unset', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', color: activeSubTab === 'mindful' ? 'var(--primary)' : 'var(--text-muted)' }}>
+            <Heart size={22} strokeWidth={activeSubTab === 'mindful' ? 2.5 : 2} />
+            <span style={{ fontSize: '0.7rem', fontWeight: activeSubTab === 'mindful' ? 700 : 500 }}>Sfide</span>
+          </button>
+        </nav>
       )}
 
     </div>
