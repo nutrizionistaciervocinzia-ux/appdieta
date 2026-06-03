@@ -1,91 +1,92 @@
 /* ============================================================
-   LIBERA DALLE DIETE — Design System Rosa Premium
+   LIBERA DALLE DIETE — Design System Noom + Apple Health
    ============================================================ */
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
 
 :root {
   --font-sans: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 
-  /* ── Palette Rosa Premium ── */
-  --primary:         #d63384;   /* Rosa fucsia pieno */
-  --primary-light:   #f06eb0;   /* Rosa medio */
-  --primary-pale:    #fce4f0;   /* Rosa palissandro chiaro */
-  --primary-bg:      #fff0f7;   /* Background rosa tenue */
-  --primary-glow:    rgba(214, 51, 132, 0.18);
+  /* ── Palette Calda Premium ── */
+  --primary:         #d63384;   /* Rosa fucsia — solo per accenti */
+  --primary-light:   #f06eb0;
+  --primary-pale:    #fce4f0;
+  --primary-bg:      #fff5fb;
+  --primary-glow:    rgba(214, 51, 132, 0.12);
 
-  --accent:          #ff6eb4;   /* Rosa corallo */
+  --accent:          #ff6eb4;
   --accent-light:    #ffd6ec;
 
-  /* ── Sfondi ── */
-  --bg-primary:      #fff5fb;   /* Rosa bianco caldo */
-  --bg-card:         rgba(255, 255, 255, 0.88);
-  --bg-input:        #ffffff;
-  --bg-gradient:     linear-gradient(135deg, #fff0f7 0%, #fce4f0 40%, #ffd6ec 100%);
+  /* ── Sfondi — Crema/Bianco caldo ── */
+  --bg-primary:      #FAFAF8;   /* Crema quasi bianco */
+  --bg-secondary:    #F5F4F0;   /* Crema leggermente più scura per sezioni */
+  --bg-card:         #FFFFFF;   /* Card bianche pure */
+  --bg-input:        #F8F7F5;
+  --bg-gradient:     #FAFAF8;
 
-  /* ── Bordi ── */
-  --border-color:    rgba(214, 51, 132, 0.18);
-  --border-soft:     rgba(240, 110, 176, 0.15);
+  /* ── Bordi — sottilissimi e neutri ── */
+  --border-color:    rgba(0, 0, 0, 0.07);
+  --border-soft:     rgba(0, 0, 0, 0.05);
 
   /* ── Testi ── */
-  --text-color:      #3d0a24;   /* Rosa scurissimo / prugna */
-  --text-main:       #3d0a24;
-  --text-muted:      #a05070;
+  --text-color:      #1C1C1E;   /* Quasi nero, come iOS */
+  --text-main:       #1C1C1E;
+  --text-muted:      #8E8E93;   /* Grigio iOS */
   --text-inverse:    #ffffff;
 
   /* ── Feedback colori ── */
-  --success:         #16a34a;
-  --danger:          #dc2626;
+  --success:         #34C759;   /* Verde iOS */
+  --danger:          #FF3B30;   /* Rosso iOS */
 
-  /* ── Ombre con tinta rosa ── */
-  --shadow-sm:       0 2px 6px rgba(214, 51, 132, 0.06);
-  --shadow-md:       0 4px 24px -4px rgba(214, 51, 132, 0.15);
-  --shadow-lg:       0 12px 40px -8px rgba(214, 51, 132, 0.20), 0 4px 16px -4px rgba(0,0,0,0.04);
-  --shadow-glow:     0 0 24px rgba(214, 51, 132, 0.25);
+  /* ── Ombre morbide — niente tinte rosa ── */
+  --shadow-sm:       0 1px 4px rgba(0,0,0,0.06), 0 2px 8px rgba(0,0,0,0.04);
+  --shadow-md:       0 4px 16px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.04);
+  --shadow-lg:       0 8px 32px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.06);
+  --shadow-glow:     0 0 20px rgba(214, 51, 132, 0.15);
 
-  /* ── Colori piatto (plate segments) ── */
-  --color-carb:      #f59e0b;
-  --color-carb-bg:   #fef3c7;
-  --color-prot:      #8b5cf6;
-  --color-prot-bg:   #ede9fe;
-  --color-veg:       #10b981;
-  --color-veg-bg:    #d1fae5;
-  --color-fat:       #ec4899;
-  --color-fat-bg:    #fce7f3;
+  /* ── Colori piatto — pastello morbido ── */
+  --color-carb:      #F59E0B;
+  --color-carb-bg:   #FFFBEB;   /* Giallo pastellissimo */
+  --color-prot:      #6366F1;
+  --color-prot-bg:   #EEF2FF;   /* Indigo pastellissimo */
+  --color-veg:       #10B981;
+  --color-veg-bg:    #ECFDF5;   /* Verde pastellissimo */
+  --color-fat:       #EC4899;
+  --color-fat-bg:    #FDF2F8;   /* Rosa pastellissimo */
 
-  --radius-sm:       10px;
-  --radius-md:       18px;
-  --radius-lg:       28px;
+  --radius-sm:       12px;
+  --radius-md:       20px;
+  --radius-lg:       32px;
   --radius-pill:     999px;
 }
 
 /* ── Dark Mode ── */
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg-primary:    #1a0616;
-    --bg-card:       rgba(38, 8, 30, 0.85);
-    --bg-input:      #2a0a20;
-    --bg-gradient:   linear-gradient(135deg, #1a0616 0%, #2d0a22 50%, #1a0616 100%);
-    --border-color:  rgba(214, 51, 132, 0.22);
-    --border-soft:   rgba(240, 110, 176, 0.12);
-    --text-color:    #fce4f0;
-    --text-main:     #fce4f0;
-    --text-muted:    #d48aaa;
+    --bg-primary:    #111110;
+    --bg-secondary:  #1C1C1E;
+    --bg-card:       #2C2C2E;
+    --bg-input:      #3A3A3C;
+    --bg-gradient:   #111110;
+    --border-color:  rgba(255,255,255,0.08);
+    --border-soft:   rgba(255,255,255,0.05);
+    --text-color:    #F2F2F7;
+    --text-main:     #F2F2F7;
+    --text-muted:    #8E8E93;
     --primary:       #f06eb0;
     --primary-light: #f9a8d4;
     --primary-pale:  rgba(240, 110, 176, 0.15);
     --primary-bg:    rgba(240, 110, 176, 0.08);
-    --primary-glow:  rgba(240, 110, 176, 0.25);
-    --shadow-md:     0 4px 24px -4px rgba(0,0,0,0.5);
+    --shadow-sm:     0 1px 4px rgba(0,0,0,0.4);
+    --shadow-md:     0 4px 16px rgba(0,0,0,0.5);
     --color-carb-bg: rgba(245, 158, 11, 0.15);
-    --color-prot-bg: rgba(139, 92, 246, 0.15);
+    --color-prot-bg: rgba(99, 102, 241, 0.15);
     --color-veg-bg:  rgba(16, 185, 129, 0.15);
     --color-fat-bg:  rgba(236, 72, 153, 0.15);
   }
   
   body {
-    background: linear-gradient(-45deg, #1a0616, #2d0a22, #3c0c2a, #1a0616);
-    background-size: 400% 400%;
-    animation: meshGradient 18s ease infinite;
+    background: #111110;
+    animation: none;
   }
 }
 
@@ -94,31 +95,21 @@
 ──────────────────────────────── */
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
-@keyframes meshGradient {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
 body {
   font-family: var(--font-sans);
-  background: linear-gradient(-45deg, #fff0f7, #fce4f0, #ffd6ec, #ffeaf5);
-  background-size: 400% 400%;
-  animation: meshGradient 18s ease infinite;
-  background-attachment: fixed;
+  background: var(--bg-primary);
   color: var(--text-main);
   min-height: 100vh;
   line-height: 1.6;
   overflow-x: hidden;
-  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Sottile pattern puntini rosa */
+/* Sottilissimo rumore texture per calore visivo */
 body::before {
   content: '';
   position: fixed;
   inset: 0;
-  background-image: radial-gradient(circle, rgba(214,51,132,0.05) 1px, transparent 1px);
+  background-image: radial-gradient(circle, rgba(0,0,0,0.015) 1px, transparent 1px);
   background-size: 32px 32px;
   pointer-events: none;
   z-index: 0;
@@ -129,38 +120,33 @@ body::before {
 ──────────────────────────────── */
 .glass-card {
   background: var(--bg-card);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
-  box-shadow: var(--shadow-md);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
   position: relative;
   z-index: 1;
 }
 
 .glass-card:hover {
-  box-shadow: var(--shadow-lg);
-  transform: translateY(-3px);
-  border-color: var(--primary-light);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
 }
 
 /* ────────────────────────────────
    HEADER & LOGO
 ──────────────────────────────── */
 header {
-  padding: 1.1rem 2rem;
+  padding: 1rem 1.5rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
   border-bottom: 1px solid var(--border-color);
-  background: rgba(255, 240, 247, 0.70);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background: var(--bg-card);
   position: sticky;
   top: 0;
   z-index: 50;
-  box-shadow: 0 2px 20px rgba(214,51,132,0.08);
+  box-shadow: var(--shadow-sm);
 }
 
 .logo {
