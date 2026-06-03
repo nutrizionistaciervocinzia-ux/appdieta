@@ -542,6 +542,23 @@ export default function PatientView({ patients, onUpdatePatientSelections, onUpd
   });
   const [patientHistoryWeight, setPatientHistoryWeight] = useState('');
   const [patientWeightMsg, setPatientWeightMsg] = useState('');
+  const [patientMood, setPatientMood] = useState(null);
+  const [patientMoodText, setPatientMoodText] = useState('');
+  const [patientMoodMsg, setPatientMoodMsg] = useState('');
+
+  const handleSaveMood = (e) => {
+    e.preventDefault();
+    if (!patientMood) {
+      alert("Seleziona prima un'emozione per oggi!");
+      return;
+    }
+    setPatientMoodMsg("🎉 Diario aggiornato! Ricorda che ogni passo conta, non solo quelli sulla bilancia.");
+    setTimeout(() => {
+      setPatientMood(null);
+      setPatientMoodText('');
+      setPatientMoodMsg('');
+    }, 4000);
+  };
 
   const handlePatientAddHistoryRecord = (e) => {
     e.preventDefault();
@@ -674,7 +691,13 @@ export default function PatientView({ patients, onUpdatePatientSelections, onUpd
       };
     });
 
-    const linePath = points.map((p, idx) => `${idx === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');
+    const linePath = points.map((p, i, a) => {
+      if (i === 0) return `M ${p.x} ${p.y}`;
+      const cpsX = (a[i - 1].x + p.x) / 2;
+      return `C ${cpsX} ${a[i-1].y}, ${cpsX} ${p.y}, ${p.x} ${p.y}`;
+    }).join(' ');
+    
+    // The area path needs to start with the line path, then close the shape
     const areaPath = `${linePath} L ${points[points.length - 1].x} ${paddingTop + chartHeight} L ${points[0].x} ${paddingTop + chartHeight} Z`;
 
     const gridLines = [];
@@ -685,22 +708,26 @@ export default function PatientView({ patients, onUpdatePatientSelections, onUpd
     }
 
     const gradientId = `patient-grad-${valueKey}`;
+    const filterId = `shadow-${valueKey}`;
 
     return (
-      <div style={{ background: '#ffffff', padding: '1rem', borderRadius: '16px', border: '1px solid var(--border-soft)', boxShadow: 'var(--shadow-sm)' }}>
-        <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-muted)', display: 'block', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+      <div className="glass-card" style={{ padding: '1.25rem', borderRadius: '16px', border: '1px solid var(--border-soft)' }}>
+        <span style={{ fontSize: '0.85rem', fontWeight: 800, color: 'var(--text-main)', display: 'block', marginBottom: '1rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
           {label}
         </span>
         <div style={{ width: '100%', overflowX: 'auto' }}>
-          <svg width="100%" height={height} viewBox={`0 0 ${width} ${height}`} style={{ minWidth: '280px', display: 'block' }}>
+          <svg width="100%" height={height} viewBox={`0 0 ${width} ${height}`} style={{ minWidth: '280px', display: 'block', overflow: 'visible' }}>
             <defs>
               <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor={color} stopOpacity="0.15" />
+                <stop offset="0%" stopColor={color} stopOpacity="0.25" />
                 <stop offset="100%" stopColor={color} stopOpacity="0.0" />
               </linearGradient>
+              <filter id={filterId} x="-20%" y="-20%" width="140%" height="140%">
+                <feDropShadow dx="0" dy="4" stdDeviation="4" floodColor={color} floodOpacity="0.3" />
+              </filter>
             </defs>
 
-            {/* Griglia */}
+            {/* Griglia nascosta per un look più pulito, o resa leggerissima */}
             {gridLines.map((gl, idx) => (
               <g key={idx}>
                 <line 
@@ -708,17 +735,18 @@ export default function PatientView({ patients, onUpdatePatientSelections, onUpd
                   y1={gl.y} 
                   x2={width - paddingRight} 
                   y2={gl.y} 
-                  stroke="#f9fafb" 
+                  stroke="rgba(0,0,0,0.03)" 
                   strokeWidth="1" 
-                  strokeDasharray="3 3" 
+                  strokeDasharray="4 4" 
                 />
                 <text 
-                  x={paddingLeft - 6} 
+                  x={paddingLeft - 8} 
                   y={gl.y + 3} 
                   textAnchor="end" 
-                  fill="#9ca3af" 
+                  fill="var(--text-muted)" 
                   fontSize="8.5" 
                   fontWeight="600"
+                  opacity="0.6"
                 >
                   {gl.val}{suffix}
                 </text>
@@ -733,9 +761,10 @@ export default function PatientView({ patients, onUpdatePatientSelections, onUpd
               d={linePath} 
               fill="none" 
               stroke={color} 
-              strokeWidth="2.5" 
+              strokeWidth="4" 
               strokeLinecap="round" 
               strokeLinejoin="round" 
+              filter={`url(#${filterId})`}
             />
 
             {/* Punti */}
@@ -2512,19 +2541,84 @@ Contesto:
                 );
               })()}
 
+              {/* Card Diario Emozionale (Non-Scale Victories) */}
+              <div className="glass-card" style={{ 
+                padding: '1.5rem', 
+                marginBottom: '1.5rem', 
+                background: 'rgba(255, 255, 255, 0.75)',
+                border: '1px solid var(--border-soft)',
+                boxShadow: 'var(--shadow-md)',
+                animation: 'modalSlide 0.4s ease'
+              }}>
+                <h4 style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--primary)', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                  🌸 Come ti senti oggi?
+                </h4>
+                <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', marginBottom: '1.25rem', lineHeight: 1.45 }}>
+                  Le vere vittorie si misurano in energia, sorriso e libertà. Condividi il tuo <strong>Non-Scale Victory</strong> del giorno!
+                </p>
+
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
+                  {[
+                    { id: 'great', emoji: '🤩', label: 'Benissimo' },
+                    { id: 'good', emoji: '😊', label: 'Bene' },
+                    { id: 'okay', emoji: '😌', label: 'Normale' },
+                    { id: 'tired', emoji: '🥱', label: 'Stanca/o' },
+                    { id: 'bad', emoji: '😔', label: 'Giù di morale' }
+                  ].map(m => (
+                    <button 
+                      key={m.id}
+                      onClick={() => setPatientMood(m.id)}
+                      style={{ 
+                        all: 'unset', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.4rem',
+                        opacity: patientMood === m.id ? 1 : (patientMood ? 0.4 : 1),
+                        transform: patientMood === m.id ? 'scale(1.15)' : 'scale(1)',
+                        transition: 'all 0.3s ease'
+                      }}
+                    >
+                      <span style={{ fontSize: '1.7rem', filter: patientMood === m.id ? 'drop-shadow(0 4px 6px rgba(214,51,132,0.3))' : 'none' }}>{m.emoji}</span>
+                      <span style={{ fontSize: '0.65rem', fontWeight: 700, color: patientMood === m.id ? 'var(--primary)' : 'var(--text-muted)' }}>{m.label}</span>
+                    </button>
+                  ))}
+                </div>
+
+                <form onSubmit={handleSaveMood} style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                  <textarea 
+                    className="form-input"
+                    rows="2"
+                    placeholder="Scrivi qui i tuoi pensieri liberi, i traguardi o come ti senti..."
+                    style={{ padding: '0.75rem', fontSize: '0.85rem', resize: 'none', borderRadius: '12px' }}
+                    value={patientMoodText}
+                    onChange={(e) => setPatientMoodText(e.target.value)}
+                  />
+                  <button 
+                    type="submit" 
+                    className="btn btn-primary"
+                    style={{ padding: '0.6rem', borderRadius: '12px', fontSize: '0.85rem', fontWeight: 700, boxShadow: 'var(--shadow-sm)' }}
+                  >
+                    Salva nel Diario Segreto
+                  </button>
+                </form>
+
+                {patientMoodMsg && (
+                  <div style={{ marginTop: '1rem', padding: '0.75rem', borderRadius: '10px', fontSize: '0.8rem', fontWeight: 600, textAlign: 'center', background: 'var(--color-veg-bg)', color: '#065f46', animation: 'fadeIn 0.3s ease' }}>
+                    {patientMoodMsg}
+                  </div>
+                )}
+              </div>
+
               {/* Card Inserimento Rilevazione Paziente */}
               <div className="glass-card" style={{ 
                 padding: '1.25rem', 
                 marginBottom: '1.5rem', 
-                background: 'rgba(255, 255, 255, 0.55)',
+                background: 'rgba(255, 255, 255, 0.4)',
                 border: '1px solid var(--border-soft)',
                 boxShadow: 'var(--shadow-sm)'
               }}>
                 <h4 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--primary)', marginBottom: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                  ⚖️ Registra il tuo Peso Settimanale
+                  ⚖️ Registra il tuo Peso (Opzionale)
                 </h4>
                 <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '1.25rem', lineHeight: 1.45, borderLeft: '3px solid var(--primary)', paddingLeft: '0.75rem' }}>
-                  ℹ️ <strong>Una nota importante:</strong> il peso sulla bilancia è solo un numero complessivo e <strong>non indica con precisione cosa sta succedendo</strong> al tuo corpo (se stai perdendo grasso o mettendo muscoli). Le oscillazioni sono del tutto fisiologiche e dipendono da idratazione, stress o ritenzione. <strong>Se il peso sale o rimane costante, non spaventiamoci!</strong> Fa parte del percorso. Continuiamo ad andare avanti con fiducia e costanza.
+                  ℹ️ Ricorda: <strong>Il peso non ti definisce.</strong> Le oscillazioni sono fisiologiche. Inseriscilo solo se te la senti e non farti condizionare dai numeri!
                 </p>
 
                 <form onSubmit={handlePatientAddHistoryRecord} style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', alignItems: 'flex-end' }}>
@@ -3484,34 +3578,28 @@ Contesto:
                   patient.messages.map((msg, idx) => (
                     <div 
                       key={msg.id || idx} 
-                      style={{ 
-                        alignSelf: msg.sender === 'patient' ? 'flex-end' : 'flex-start',
-                        maxWidth: '85%',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: '0.15rem'
-                      }}
+                      className={`chat-bubble ${msg.sender === 'patient' ? 'chat-bubble-user' : 'chat-bubble-ai'}`}
+                      style={{ padding: '0.85rem 1rem', marginBottom: '0.5rem' }}
                     >
-                      <div style={{ 
-                        padding: '0.7rem 0.95rem', 
-                        borderRadius: msg.sender === 'patient' ? '16px 16px 4px 16px' : '16px 16px 16px 4px',
-                        background: msg.sender === 'patient' ? 'var(--primary)' : '#ffffff',
-                        color: msg.sender === 'patient' ? '#ffffff' : 'var(--text-color)',
-                        border: msg.sender === 'patient' ? 'none' : '1px solid var(--border-soft)',
-                        fontSize: '0.85rem',
-                        lineHeight: 1.4,
-                        boxShadow: 'var(--shadow-sm)'
-                      }}>
-                        {msg.text}
+                      <div style={{
+                          width: '34px', height: '34px', borderRadius: '50%', flexShrink: 0,
+                          background: msg.sender === 'patient' ? 'var(--primary-bg)' : 'var(--color-veg-bg)',
+                          color: msg.sender === 'patient' ? 'var(--primary)' : '#047857',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem'
+                        }}>
+                          {msg.sender === 'patient' ? '👤' : '👩🏻‍⚕️'}
                       </div>
-                      <span style={{ 
-                        fontSize: '0.62rem', 
-                        color: 'var(--text-muted)', 
-                        alignSelf: msg.sender === 'patient' ? 'flex-end' : 'flex-start',
-                        padding: '0 0.2rem'
-                      }}>
-                        {msg.timestamp ? new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
-                      </span>
+                      <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+                          <span style={{ fontSize: '0.75rem', fontWeight: 750, color: 'var(--text-muted)', marginBottom: '0.25rem' }}>
+                            {msg.sender === 'patient' ? 'Tu' : 'Dott.ssa Ciervo'}
+                          </span>
+                          <div style={{ fontSize: '0.9rem', color: 'var(--text-main)', lineHeight: 1.5 }}>
+                            {msg.text}
+                          </div>
+                          <span style={{ fontSize: '0.62rem', color: 'var(--text-muted)', marginTop: '0.4rem' }}>
+                            {msg.timestamp ? new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
+                          </span>
+                      </div>
                     </div>
                   ))
                 )}
@@ -3775,24 +3863,36 @@ Contesto:
                       <div 
                         key={msg.id} 
                         className={`chat-bubble ${msg.sender === 'user' ? 'chat-bubble-user' : 'chat-bubble-ai'}`}
+                        style={{ padding: '1rem', marginBottom: '0.5rem' }}
                       >
-                        {renderFormattedText(msg.text)}
-                        {msg.isError && msg.userQuery && (
-                          <button 
-                            className="btn btn-secondary btn-sm"
-                            style={{ marginTop: '0.75rem', width: '100%', fontSize: '0.78rem', padding: '0.4rem', gap: '0.25rem', borderRadius: '6px' }}
-                            onClick={() => handleFallbackLocalResponse(msg.userQuery)}
-                          >
-                            🍳 Usa il Ricettario Locale (Offline)
-                          </button>
-                        )}
-                        <div style={{ 
-                          fontSize: '0.65rem', 
-                          opacity: 0.6, 
-                          marginTop: '0.5rem', 
-                          textAlign: msg.sender === 'user' ? 'right' : 'left' 
+                        <div style={{
+                          width: '34px', height: '34px', borderRadius: '50%', flexShrink: 0,
+                          background: msg.sender === 'user' ? 'var(--primary-bg)' : 'var(--primary)',
+                          color: msg.sender === 'user' ? 'var(--primary)' : '#fff',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem',
+                          boxShadow: msg.sender === 'ai' ? 'var(--shadow-glow)' : 'none'
                         }}>
-                          {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          {msg.sender === 'user' ? '👤' : <Sparkles size={18} />}
+                        </div>
+                        <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+                          <span style={{ fontSize: '0.75rem', fontWeight: 750, color: 'var(--text-muted)', marginBottom: '0.25rem' }}>
+                            {msg.sender === 'user' ? 'Tu' : 'Chef Assistente'}
+                          </span>
+                          <div style={{ fontSize: '0.9rem', color: 'var(--text-main)', lineHeight: 1.55 }}>
+                            {renderFormattedText(msg.text)}
+                          </div>
+                          {msg.isError && msg.userQuery && (
+                            <button 
+                              className="btn btn-secondary btn-sm"
+                              style={{ marginTop: '0.75rem', width: 'fit-content', fontSize: '0.75rem', padding: '0.5rem 1rem', gap: '0.35rem', borderRadius: '20px' }}
+                              onClick={() => handleFallbackLocalResponse(msg.userQuery)}
+                            >
+                              🍳 Usa il Ricettario Locale (Offline)
+                            </button>
+                          )}
+                          <div style={{ fontSize: '0.62rem', opacity: 0.6, marginTop: '0.4rem' }}>
+                            {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          </div>
                         </div>
                       </div>
                     ))
