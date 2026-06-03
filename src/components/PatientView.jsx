@@ -2206,6 +2206,7 @@ Contesto:
                         title="Clicca per sostituire i carboidrati"
                       >
                         <div className="segment-content">
+                          <span className="segment-name">Carboidrati</span>
                           <span className="segment-food">
                             {activeCarb ? activeCarb.food : 'Nessuno'}
                           </span>
@@ -2222,6 +2223,7 @@ Contesto:
                         title="Clicca per sostituire le proteine"
                       >
                         <div className="segment-content">
+                          <span className="segment-name">Proteine</span>
                           <span className="segment-food">
                             {activeProt ? activeProt.food : 'Nessuno'}
                           </span>
@@ -2238,6 +2240,7 @@ Contesto:
                         title="Clicca per sostituire le verdure"
                       >
                         <div className="segment-content">
+                          <span className="segment-name">Verdure</span>
                           <span className="segment-food">
                             {activeVeg ? activeVeg.food : 'A scelta'}
                           </span>
@@ -2263,24 +2266,6 @@ Contesto:
                           </span>
                         </div>
                       </div>
-
-                      {/* Etichette curve SVG */}
-                      <svg viewBox="0 0 200 200" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 5 }}>
-                        <defs>
-                          <path id="path-carb" d="M 100,6 A 94,94 0 0,1 194,100" />
-                          <path id="path-prot" d="M 100,194 A 94,94 0 0,0 194,100" />
-                          <path id="path-veg" d="M 100,6 A 94,94 0 0,0 100,194" />
-                        </defs>
-                        <text fill="#b45309" fontSize="7.5" fontWeight="800" letterSpacing="1.5" fontFamily="var(--font-sans)">
-                          <textPath href="#path-carb" startOffset="50%" textAnchor="middle" dominantBaseline="middle">CARBOIDRATI</textPath>
-                        </text>
-                        <text fill="#5b21b6" fontSize="7.5" fontWeight="800" letterSpacing="1.5" fontFamily="var(--font-sans)">
-                          <textPath href="#path-prot" startOffset="50%" textAnchor="middle" dominantBaseline="middle">PROTEINE</textPath>
-                        </text>
-                        <text fill="#047857" fontSize="7.5" fontWeight="800" letterSpacing="1.5" fontFamily="var(--font-sans)">
-                          <textPath href="#path-veg" startOffset="50%" textAnchor="middle" dominantBaseline="middle">VERDURE</textPath>
-                        </text>
-                      </svg>
 
                     </div>
 
