@@ -441,6 +441,7 @@ export default function PatientView({ patients, onUpdatePatientSelections, onUpd
     const d = new Date().getDay();
     return d === 0 ? 6 : d - 1; // 0 = Lun, 6 = Dom
   });
+  const [isChallengeModalOpen, setIsChallengeModalOpen] = useState(false);
 
   // Allinea la settimana visualizzata alla settimana attiva nel profilo del paziente
   useEffect(() => {
@@ -1613,7 +1614,11 @@ Contesto:
                 {/* Card Highlight Sfida 12 Settimane */}
                 <div style={{ padding: '0 1.5rem', marginBottom: '1.5rem' }}>
                   <button
-                    onClick={() => setActiveSubTab('progressi')}
+                    onClick={() => {
+                      setActiveSubTab('progressi');
+                      setSelectedChallengeWeek(getChallengeProgress().currentWeek);
+                      setIsChallengeModalOpen(true);
+                    }}
                     className="glass-card"
                     style={{ 
                       all: 'unset', width: '100%', cursor: 'pointer', 
@@ -2919,6 +2924,7 @@ Contesto:
                           onClick={() => {
                             if (!isLocked || isSelected) {
                               setSelectedChallengeWeek(ch.week);
+                              setIsChallengeModalOpen(true);
                             }
                           }}
                         >
@@ -2958,8 +2964,8 @@ Contesto:
                     })}
                   </div>
 
-                  {/* Dettaglio Settimana Selezionata */}
-                  {(() => {
+                  {/* Dettaglio Settimana Selezionata - ORA E' UN MODAL */}
+                  {isChallengeModalOpen && (() => {
                     const currentCh = liberaDieteChallenges.find(c => c.week === selectedChallengeWeek);
                     const prog = getChallengeProgress();
                     const completedDaysArr = prog.completedDays[selectedChallengeWeek] || [false, false, false, false, false, false, false];
@@ -2974,156 +2980,166 @@ Contesto:
                     const isActiveDayCompleted = completedDaysArr[selectedChallengeDay];
                     
                     return (
-                      <div style={{ 
-                        background: '#ffffff', 
-                        padding: '1.25rem', 
-                        borderRadius: '18px', 
-                        border: '1px solid var(--border-soft)',
-                        boxShadow: 'var(--shadow-sm)',
+                      <div style={{
+                        position: 'fixed',
+                        inset: 0,
+                        backgroundColor: 'rgba(0, 0, 0, 0.4)',
+                        backdropFilter: 'blur(8px)',
+                        WebkitBackdropFilter: 'blur(8px)',
+                        zIndex: 2000,
                         display: 'flex',
-                        flexDirection: 'column',
-                        gap: '1rem'
+                        alignItems: 'flex-end',
+                        justifyContent: 'center',
+                        animation: 'fadeIn 0.3s ease'
+                      }} onClick={(e) => {
+                        if (e.target === e.currentTarget) setIsChallengeModalOpen(false);
                       }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.5rem' }}>
-                          <div>
-                            <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: 700, color: 'var(--text-color)' }}>
-                              Settimana {currentCh.week}: {currentCh.title}
-                            </h4>
-                            <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 500 }}>
-                              🎯 Focus: {currentCh.focus}
-                            </span>
-                          </div>
-                          {!isActive && (
-                            <button
-                              type="button"
-                              className="btn btn-outline btn-sm"
-                              style={{ padding: '0.25rem 0.6rem', fontSize: '0.72rem', borderRadius: '12px' }}
-                              onClick={() => handleChangeActiveChallengeWeek(currentCh.week)}
-                            >
-                              Imposta come attiva
-                            </button>
-                          )}
-                        </div>
-
-                        {/* Selettore Giorno (L, M, M, G, V, S, D) */}
-                        <div>
-                          <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '0.5rem' }}>
-                            Seleziona il giorno per visualizzare la sfida:
-                          </label>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', gap: '0.35rem' }}>
-                            {dayInitials.map((day, idx) => {
-                              const isChecked = completedDaysArr[idx];
-                              const isViewed = selectedChallengeDay === idx;
-                              
-                              return (
-                                <button
-                                  key={idx}
-                                  type="button"
-                                  onClick={() => setSelectedChallengeDay(idx)}
-                                  style={{
-                                    flex: 1,
-                                    height: '36px',
-                                    borderRadius: '12px',
-                                    border: isViewed 
-                                      ? '2px solid var(--primary)' 
-                                      : '1.5px solid var(--border-color)',
-                                    background: isChecked 
-                                      ? 'rgba(22, 163, 74, 0.08)' 
-                                      : isViewed 
-                                        ? 'var(--primary-bg)' 
-                                        : '#ffffff',
-                                    color: isChecked 
-                                      ? 'var(--success)' 
-                                      : isViewed 
-                                        ? 'var(--primary)' 
-                                        : 'var(--text-color)',
-                                    fontWeight: 700,
-                                    fontSize: '0.8rem',
-                                    cursor: 'pointer',
-                                    transition: 'all 0.2s ease',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    position: 'relative'
-                                  }}
-                                >
-                                  {day}
-                                  {isChecked && (
-                                    <span style={{
-                                      position: 'absolute',
-                                      bottom: '2px',
-                                      width: '4px',
-                                      height: '4px',
-                                      borderRadius: '50%',
-                                      background: 'var(--success)'
-                                    }} />
-                                  )}
-                                </button>
-                              );
-                            })}
-                          </div>
-                        </div>
-
-                        {/* Dettaglio della Sfida del Giorno Selezionato */}
                         <div style={{ 
-                          padding: '1rem', 
-                          background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.04) 0%, rgba(214, 51, 132, 0.04) 100%)', 
-                          border: '1.5px solid rgba(245, 158, 11, 0.15)', 
-                          borderRadius: '16px',
+                          background: '#ffffff', 
+                          padding: '1.5rem', 
+                          borderTopLeftRadius: '28px', 
+                          borderTopRightRadius: '28px', 
+                          width: '100%',
+                          maxWidth: '600px',
+                          maxHeight: '90vh',
+                          overflowY: 'auto',
+                          boxShadow: '0 -8px 32px rgba(0,0,0,0.1)',
                           display: 'flex',
                           flexDirection: 'column',
-                          gap: '0.75rem'
+                          gap: '1.25rem',
+                          animation: 'modalSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
                         }}>
-                          <div>
-                            <strong style={{ display: 'block', fontSize: '0.78rem', color: '#b45309', marginBottom: '0.15rem' }}>
-                              🔥 Sfida di {dayLabels[selectedChallengeDay]}:
-                            </strong>
-                            <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-color)', lineHeight: 1.45, fontWeight: 500 }}>
-                              {activeDayTaskText}
+                          {/* Modal Header */}
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                              <div style={{ width: '48px', height: '48px', borderRadius: '14px', background: 'var(--primary-bg)', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem' }}>
+                                {currentCh.icon}
+                              </div>
+                              <div>
+                                <h4 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800, color: 'var(--text-main)' }}>
+                                  Settimana {currentCh.week}
+                                </h4>
+                                <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: 600 }}>
+                                  {currentCh.title}
+                                </p>
+                              </div>
+                            </div>
+                            <button 
+                              onClick={() => setIsChallengeModalOpen(false)}
+                              style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: '0.5rem', color: 'var(--text-muted)' }}
+                            >
+                              <X size={24} />
+                            </button>
+                          </div>
+
+                          <div style={{ background: 'var(--bg-secondary)', padding: '1rem', borderRadius: '16px' }}>
+                            <span style={{ fontSize: '0.8rem', color: 'var(--text-main)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                              <Trophy size={16} color="var(--primary)" /> Focus della settimana:
+                            </span>
+                            <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+                              {currentCh.focus}
                             </p>
                           </div>
 
-                          {/* Bottone per completare la sfida di quel giorno */}
-                          <button
-                            type="button"
-                            onClick={() => handleToggleChallengeDay(currentCh.week, selectedChallengeDay)}
-                            style={{
-                              alignSelf: 'flex-start',
-                              padding: '0.5rem 1rem',
-                              borderRadius: '20px',
-                              border: 'none',
-                              background: isActiveDayCompleted ? 'var(--success)' : 'var(--primary)',
-                              color: '#ffffff',
-                              fontSize: '0.78rem',
-                              fontWeight: 700,
-                              cursor: 'pointer',
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: '0.35rem',
-                              transition: 'all 0.2s',
-                              boxShadow: isActiveDayCompleted ? '0 4px 12px rgba(22, 163, 74, 0.2)' : '0 4px 12px rgba(214, 51, 132, 0.2)'
-                            }}
-                          >
-                            <CheckCircle size={14} />
-                            {isActiveDayCompleted ? 'Sfida Completata! ✓' : 'Segna come completata'}
-                          </button>
-                        </div>
+                          {/* Selettore Giorno (L, M, M, G, V, S, D) */}
+                          <div>
+                            <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-main)', marginBottom: '0.75rem' }}>
+                              I tuoi traguardi giornalieri:
+                            </label>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', gap: '0.35rem' }}>
+                              {dayInitials.map((day, idx) => {
+                                const isChecked = completedDaysArr[idx];
+                                const isViewed = selectedChallengeDay === idx;
+                                
+                                return (
+                                  <button
+                                    key={idx}
+                                    type="button"
+                                    onClick={() => setSelectedChallengeDay(idx)}
+                                    style={{
+                                      flex: 1,
+                                      aspectRatio: '1',
+                                      borderRadius: '12px',
+                                      border: isViewed ? '2px solid var(--primary)' : '1px solid transparent',
+                                      background: isChecked ? 'var(--primary)' : 'var(--bg-secondary)',
+                                      color: isChecked ? 'white' : 'var(--text-main)',
+                                      fontWeight: 700,
+                                      fontSize: '0.85rem',
+                                      cursor: 'pointer',
+                                      transition: 'all 0.2s ease',
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      justifyContent: 'center',
+                                      boxShadow: isViewed ? '0 4px 12px rgba(214, 51, 132, 0.2)' : 'none',
+                                      transform: isViewed ? 'scale(1.1)' : 'scale(1)'
+                                    }}
+                                  >
+                                    {isChecked && !isViewed ? <Check size={14} strokeWidth={3} /> : day}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          </div>
 
-                        {/* Barra di progresso interna per la settimana */}
-                        <div>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '0.25rem' }}>
-                            <span>Completamento settimana: {completedCount} su 7 sfide</span>
-                            <span>{Math.round((completedCount / 7) * 100)}%</span>
+                          {/* Task Del Giorno Attivo */}
+                          <div style={{ 
+                            background: isActiveDayCompleted ? 'var(--primary-bg)' : 'var(--bg-card)', 
+                            border: isActiveDayCompleted ? '1px solid var(--primary-light)' : '1px solid var(--border-soft)',
+                            padding: '1.25rem', 
+                            borderRadius: '16px',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: '1rem',
+                            transition: 'all 0.3s ease'
+                          }}>
+                            <div>
+                              <p style={{ margin: 0, fontSize: '0.8rem', color: isActiveDayCompleted ? 'var(--primary)' : 'var(--text-muted)', fontWeight: 700, marginBottom: '0.25rem' }}>
+                                🔥 Sfida di {dayLabels[selectedChallengeDay]}:
+                              </p>
+                              <p style={{ margin: 0, fontSize: '0.95rem', fontWeight: 600, color: 'var(--text-main)', lineHeight: 1.5 }}>
+                                {activeDayTaskText}
+                              </p>
+                            </div>
+
+                            <button
+                              type="button"
+                              onClick={() => handleToggleChallengeDay(currentCh.week, selectedChallengeDay)}
+                              style={{
+                                width: '100%',
+                                padding: '0.85rem',
+                                borderRadius: '14px',
+                                border: 'none',
+                                background: isActiveDayCompleted ? 'var(--success)' : 'var(--primary)',
+                                color: '#ffffff',
+                                fontSize: '0.9rem',
+                                fontWeight: 700,
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: '0.5rem',
+                                transition: 'all 0.2s',
+                                boxShadow: isActiveDayCompleted ? '0 4px 12px rgba(22, 163, 74, 0.2)' : '0 4px 12px rgba(214, 51, 132, 0.2)'
+                              }}
+                            >
+                              <CheckCircle size={18} />
+                              {isActiveDayCompleted ? "Completato! Annulla" : "Segna come completato"}
+                            </button>
                           </div>
-                          <div style={{ height: '6px', background: 'var(--primary-bg)', borderRadius: '3px', overflow: 'hidden' }}>
-                            <div style={{ 
-                              height: '100%', 
-                              width: `${(completedCount / 7) * 100}%`, 
-                              background: 'linear-gradient(90deg, var(--primary-light) 0%, var(--primary) 100%)',
-                              borderRadius: '3px',
-                              transition: 'width 0.3s ease'
-                            }} />
-                          </div>
+
+                          {!isActive && (
+                            <button
+                              type="button"
+                              className="btn btn-outline"
+                              style={{ width: '100%', padding: '0.85rem', borderRadius: '14px', fontSize: '0.9rem' }}
+                              onClick={() => {
+                                handleChangeActiveChallengeWeek(currentCh.week);
+                                setIsChallengeModalOpen(false);
+                              }}
+                            >
+                              Imposta come settimana attiva
+                            </button>
+                          )}
                         </div>
                       </div>
                     );
