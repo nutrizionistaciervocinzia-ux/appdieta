@@ -242,7 +242,7 @@ export default function App() {
           textAlign: 'center',
           borderRadius: 'var(--radius-lg)',
           boxShadow: 'var(--shadow-lg)',
-          border: '1px solid var(--border-color)',
+          border: 'none',
           background: 'var(--bg-card)',
           backdropFilter: 'blur(20px)',
           transition: 'all 0.3s ease'

@@ -16,16 +16,16 @@
   --accent:          #ff6eb4;
   --accent-light:    #ffd6ec;
 
-  /* ── Sfondi — Crema/Bianco caldo ── */
-  --bg-primary:      #FAFAF8;   /* Crema quasi bianco */
-  --bg-secondary:    #F5F4F0;   /* Crema leggermente più scura per sezioni */
+  /* ── Sfondi — "Nuvola" (Off-white puro) ── */
+  --bg-primary:      #F4F4F5;   /* Grigio chiarissimo iOS */
+  --bg-secondary:    #E5E5EA;   /* Grigio per hover/sezioni */
   --bg-card:         #FFFFFF;   /* Card bianche pure */
-  --bg-input:        #F8F7F5;
-  --bg-gradient:     linear-gradient(180deg, #FAFAF8 0%, #F5EAE0 50%, #EAD5C5 100%);
+  --bg-input:        #F4F4F5;
+  --bg-gradient:     #F4F4F5;   /* Sfondo piatto e pulito */
 
-  /* ── Bordi — sottilissimi e neutri ── */
-  --border-color:    rgba(0, 0, 0, 0.07);
-  --border-soft:     rgba(0, 0, 0, 0.05);
+  /* ── Bordi — Invisibili o quasi ── */
+  --border-color:    rgba(0, 0, 0, 0.04);
+  --border-soft:     rgba(0, 0, 0, 0.02);
 
   /* ── Testi ── */
   --text-color:      #1C1C1E;   /* Quasi nero, come iOS */
@@ -37,11 +37,11 @@
   --success:         #34C759;   /* Verde iOS */
   --danger:          #FF3B30;   /* Rosso iOS */
 
-  /* ── Ombre morbide — niente tinte rosa ── */
-  --shadow-sm:       0 1px 4px rgba(0,0,0,0.06), 0 2px 8px rgba(0,0,0,0.04);
-  --shadow-md:       0 4px 16px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.04);
-  --shadow-lg:       0 8px 32px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.06);
-  --shadow-glow:     0 0 20px rgba(214, 51, 132, 0.15);
+  /* ── Ombre morbide — Effetto elevazione ── */
+  --shadow-sm:       0 8px 32px rgba(0,0,0,0.04), 0 2px 8px rgba(0,0,0,0.02);
+  --shadow-md:       0 12px 48px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.03);
+  --shadow-lg:       0 24px 64px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.04);
+  --shadow-glow:     0 0 40px rgba(214, 51, 132, 0.08);
 
   /* ── Colori piatto — pastello morbido ── */
   --color-carb:      #F59E0B;
@@ -106,25 +106,14 @@ body {
   overflow-x: hidden;
 }
 
-/* Sottilissimo rumore texture per calore visivo */
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background-image: radial-gradient(circle, rgba(0,0,0,0.015) 1px, transparent 1px);
-  background-size: 32px 32px;
-  pointer-events: none;
-  z-index: 0;
-}
+/* Sottilissimo rumore texture rimosso per il Light Premium */
 
 /* ────────────────────────────────
    GLASSMORPHISM CARD
 ──────────────────────────────── */
 .glass-card {
   background: var(--bg-card);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid var(--border-color);
+  border: none;
   border-radius: 28px;
   padding: 1.5rem;
   box-shadow: var(--shadow-sm);

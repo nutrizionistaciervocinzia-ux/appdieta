@@ -4095,17 +4095,17 @@ Contesto:
       {patient && (
         <div style={{ position: 'fixed', bottom: '1.25rem', left: '1rem', right: '1rem', zIndex: 1000, display: 'flex', justifyContent: 'center' }}>
           <nav style={{
-            background: 'rgba(20, 20, 22, 0.95)',
-            backdropFilter: 'blur(20px)',
-            WebkitBackdropFilter: 'blur(20px)',
-            boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
+            background: 'rgba(255, 255, 255, 0.92)',
+            backdropFilter: 'blur(24px)',
+            WebkitBackdropFilter: 'blur(24px)',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
             display: 'flex',
             justifyContent: 'space-around',
             padding: '0.6rem 1rem',
             borderRadius: '100px',
             width: '100%',
             maxWidth: '400px',
-            border: '1px solid rgba(255,255,255,0.08)'
+            border: '1px solid rgba(0,0,0,0.04)'
           }}>
             {[
               { id: 'home', icon: <Home size={22} />, label: 'Home' },
@@ -4125,7 +4125,7 @@ Contesto:
                     flexDirection: 'column',
                     alignItems: 'center',
                     gap: '4px',
-                    color: isActive ? '#ffffff' : '#8E8E93',
+                    color: isActive ? '#1c1c1e' : '#8E8E93',
                     minWidth: '60px',
                     padding: '6px 4px',
                     transition: 'all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)',
@@ -4158,7 +4158,7 @@ Contesto:
                       width: '36px',
                       height: '36px',
                       borderRadius: '50%',
-                      background: 'rgba(255,255,255,0.1)',
+                      background: 'rgba(0,0,0,0.04)',
                       zIndex: -1
                     }} />
                   )}
