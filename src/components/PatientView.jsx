@@ -2193,8 +2193,7 @@ Contesto:
                         <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600 }}>
                           {msg}
                         </span>
-                      </div>,
-                      document.body
+                      </div>
                     );
                   })()}
                 </div>
@@ -3146,7 +3145,8 @@ Contesto:
                             </button>
                           )}
                         </div>
-                      </div>
+                      </div>,
+                      document.body
                     );
                   })()}
                 </div>
