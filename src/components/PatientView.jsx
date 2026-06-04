@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { 
   Calendar, 
   Coffee, 
@@ -2192,7 +2193,8 @@ Contesto:
                         <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600 }}>
                           {msg}
                         </span>
-                      </div>
+                      </div>,
+                      document.body
                     );
                   })()}
                 </div>
@@ -2979,7 +2981,7 @@ Contesto:
                     const activeDayTaskText = currentCh.dailyTasks[selectedChallengeDay] || "";
                     const isActiveDayCompleted = completedDaysArr[selectedChallengeDay];
                     
-                    return (
+                    return createPortal(
                       <div style={{
                         position: 'fixed',
                         top: 0,
