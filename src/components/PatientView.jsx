@@ -20,7 +20,9 @@ import {
   Menu,
   X,
   LogOut,
-  Home
+  Home,
+  Lock,
+  Check
 } from 'lucide-react';
 
 const liberaDieteChallenges = [
@@ -1608,6 +1610,45 @@ Contesto:
                   </div>
                 </div>
 
+                {/* Card Highlight Sfida 12 Settimane */}
+                <div style={{ padding: '0 1.5rem', marginBottom: '1.5rem' }}>
+                  <button
+                    onClick={() => setActiveSubTab('progressi')}
+                    className="glass-card"
+                    style={{ 
+                      all: 'unset', width: '100%', cursor: 'pointer', 
+                      display: 'flex', flexDirection: 'column', padding: '1.25rem', 
+                      borderRadius: '24px', boxSizing: 'border-box', 
+                      background: 'linear-gradient(135deg, rgba(214, 51, 132, 0.04) 0%, rgba(139, 92, 246, 0.04) 100%)',
+                      border: '1px solid rgba(214, 51, 132, 0.1)',
+                      position: 'relative', overflow: 'hidden'
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.75rem' }}>
+                      <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'var(--primary)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <Trophy size={20} />
+                      </div>
+                      <div>
+                        <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--text-main)', margin: 0 }}>
+                          La Sfida di Questa Settimana
+                        </h3>
+                        <p style={{ margin: 0, fontSize: '0.75rem', color: 'var(--primary)', fontWeight: 600 }}>
+                          Settimana {getChallengeProgress().currentWeek} di 12
+                        </p>
+                      </div>
+                      <ChevronRight size={18} color="var(--primary)" style={{ marginLeft: 'auto' }} />
+                    </div>
+                    
+                    <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-muted)', lineHeight: 1.4 }}>
+                      {liberaDieteChallenges.find(c => c.week === getChallengeProgress().currentWeek)?.title || 'Continua il tuo percorso'}
+                    </p>
+                    
+                    <div style={{ marginTop: '0.75rem', height: '6px', background: 'rgba(0,0,0,0.05)', borderRadius: '6px', overflow: 'hidden' }}>
+                      <div style={{ height: '100%', background: 'var(--primary)', width: `${(getChallengeProgress().completedDays[getChallengeProgress().currentWeek]?.filter(Boolean).length || 0) / 7 * 100}%`, transition: 'width 0.5s ease' }}></div>
+                    </div>
+                  </button>
+                </div>
+
                 {/* Card Pasto di Oggi */}
                 <div style={{ padding: '0 1.5rem', marginBottom: '1.25rem' }}>
                   <h2 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.06em', fontSize: '0.8rem' }}>
@@ -2855,65 +2896,64 @@ Contesto:
                     })()}
                   </div>
 
-                  {/* Grid orizzontale/scrollabile di tutte le 12 settimane */}
-                  <div style={{ 
-                    display: 'flex', 
-                    gap: '0.5rem', 
-                    overflowX: 'auto', 
-                    paddingBottom: '0.85rem',
-                    marginBottom: '1.25rem',
-                    scrollbarWidth: 'thin'
-                  }}>
-                    {liberaDieteChallenges.map((ch) => {
+                  {/* Mappa del Viaggio (Roadmap Verticale) */}
+                  <div className="roadmap-container">
+                    <div className="roadmap-line"></div>
+                    {liberaDieteChallenges.map((ch, idx) => {
                       const prog = getChallengeProgress();
                       const isSelected = selectedChallengeWeek === ch.week;
                       const isActive = prog.currentWeek === ch.week;
+                      const isLocked = ch.week > prog.currentWeek;
                       const completedCount = prog.completedDays[ch.week]?.filter(Boolean).length || 0;
                       const isCompleted = completedCount === 7;
                       
+                      let iconClass = 'roadmap-icon';
+                      if (isCompleted) iconClass += ' completed';
+                      else if (isActive) iconClass += ' active';
+                      else if (isLocked) iconClass += ' locked';
+                      
                       return (
-                        <button
-                          key={ch.week}
-                          type="button"
+                        <div 
+                          key={ch.week} 
+                          className="roadmap-node"
                           onClick={() => {
-                            setSelectedChallengeWeek(ch.week);
-                          }}
-                          style={{
-                            flexShrink: 0,
-                            padding: '0.65rem 0.85rem',
-                            borderRadius: '16px',
-                            border: isSelected 
-                              ? '2px solid var(--primary)' 
-                              : isActive 
-                                ? '1.5px dashed #f59e0b' 
-                                : '1px solid var(--border-soft)',
-                            background: isSelected 
-                              ? 'var(--primary-bg)' 
-                              : '#ffffff',
-                            color: 'var(--text-color)',
-                            cursor: 'pointer',
-                            transition: 'all 0.25s ease',
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            gap: '0.2rem',
-                            minWidth: '95px',
-                            boxShadow: isSelected ? 'var(--shadow-sm)' : 'none',
-                            transform: isSelected ? 'translateY(-2px)' : 'none'
+                            if (!isLocked || isSelected) {
+                              setSelectedChallengeWeek(ch.week);
+                            }
                           }}
                         >
-                          <span style={{ fontSize: '0.7rem', fontWeight: 700, opacity: 0.8 }}>
-                            Sett. {ch.week}
-                          </span>
-                          <span style={{ fontSize: '1.2rem' }}>{ch.icon}</span>
-                          <span style={{ 
-                            fontSize: '0.65rem', 
-                            fontWeight: 700, 
-                            color: isCompleted ? 'var(--success)' : completedCount > 0 ? 'var(--primary)' : 'var(--text-muted)'
+                          <div className={iconClass}>
+                            {isLocked ? <Lock size={20} /> : (isCompleted ? <Check size={24} /> : ch.icon)}
+                          </div>
+                          
+                          <div className="roadmap-content" style={{
+                            border: isSelected ? '2px solid var(--primary)' : (isActive ? '2px solid #f59e0b' : 'none'),
+                            opacity: isLocked ? 0.6 : 1
                           }}>
-                            {isCompleted ? '✓ 7/7' : `${completedCount}/7 gg`}
-                          </span>
-                        </button>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                              <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 700, color: 'var(--text-main)' }}>
+                                Settimana {ch.week}: {ch.title}
+                              </h4>
+                              {!isLocked && (
+                                <span style={{ fontSize: '0.75rem', fontWeight: 600, color: isCompleted ? 'var(--success)' : 'var(--primary)' }}>
+                                  {isCompleted ? 'Completata ✓' : `${completedCount}/7`}
+                                </span>
+                              )}
+                            </div>
+                            <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--text-muted)', lineHeight: 1.4 }}>
+                              {isLocked ? 'Completa la settimana precedente per sbloccare.' : ch.desc}
+                            </p>
+                            
+                            {/* ProgressBar per la settimana attiva */}
+                            {!isLocked && !isCompleted && (
+                              <div style={{ marginTop: '0.8rem' }}>
+                                <div className="progress-bar-bg">
+                                  <div className="progress-bar-fill" style={{ width: `${(completedCount / 7) * 100}%` }}></div>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </div>
                       );
                     })}
                   </div>
