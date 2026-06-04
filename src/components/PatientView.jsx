@@ -2314,7 +2314,7 @@ Contesto:
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '0.75rem' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--primary)' }}>
                     <ChefHat size={20} />
-                    <h3 style={{ fontSize: '1.1rem', fontWeight: 700, margin: 0 }}>Piano Alimentare</h3>
+                    <h3 style={{ fontSize: '1.1rem', fontWeight: 700, margin: 0 }}>Il Tuo Piatto</h3>
                   </div>
                   
                   {/* Toggle Tab Pranzo/Cena */}
@@ -2471,7 +2471,7 @@ Contesto:
 
                   {/* Dettagli statici ed informazioni a fianco del piatto */}
                   <div style={{ padding: '0 0.5rem' }}>
-                    <h4 style={{ color: 'var(--primary)', marginBottom: '0.5rem', fontSize: '1rem', fontWeight: 700 }}>Riepilogo Piano</h4>
+                    <h4 style={{ color: 'var(--primary)', marginBottom: '0.5rem', fontSize: '1rem', fontWeight: 700 }}>Riepilogo Piatto</h4>
                     <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '1.25rem', lineHeight: 1.4 }}>
                       Personalizza il pranzo o la cena selezionando le alternative approvate dal tuo piano nutrizionale.
                     </p>
@@ -2601,275 +2601,132 @@ Contesto:
           {activeSubTab === 'progressi' && (
             <div style={{ animation: 'modalSlide 0.3s ease' }}>
               
-              {/* Banner Prossimo Controllo e Riepilogo */}
-              <div className="glass-card" style={{ padding: '1.5rem', marginBottom: '1.5rem', background: 'linear-gradient(135deg, rgba(214, 51, 132, 0.05) 0%, rgba(176, 36, 110, 0.05) 100%)' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem' }}>
-                  <div style={{
-                    width: '38px',
-                    height: '38px',
-                    borderRadius: '50%',
-                    background: 'var(--primary-bg)',
-                    color: 'var(--primary)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: '1.2rem'
-                  }}>
-                    📅
-                  </div>
-                  <div>
-                    <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'block', fontWeight: 600, textTransform: 'uppercase' }}>Prossimo Appuntamento</span>
-                    <strong style={{ fontSize: '1.1rem', color: 'var(--primary)' }}>
-                      {formatCheckupDate(patient?.nextCheckupDate)}
-                    </strong>
-                  </div>
-                </div>
-                <p style={{ margin: 0, fontSize: '0.82rem', color: 'var(--text-muted)', lineHeight: 1.4 }}>
-                  Porta con te il diario alimentare aggiornato e tieni traccia delle tue risposte dell'Assistente AI per discuterne insieme durante il controllo!
-                </p>
-              </div>
-
-              {/* Stato Attuale BIA & Peso */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.75rem', marginBottom: '1.5rem' }}>
-                <div style={{ background: '#ffffff', border: '1px solid var(--border-color)', padding: '0.75rem 0.5rem', borderRadius: '12px', textAlign: 'center', boxShadow: 'var(--shadow-sm)' }}>
-                  <span style={{ fontSize: '0.62rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', display: 'block' }}>Peso Attuale</span>
-                  <strong style={{ fontSize: '1.1rem', color: 'var(--primary)', display: 'block', margin: '0.2rem 0' }}>
-                    {patient?.weight || '--'} kg
-                  </strong>
-                </div>
-                <div style={{ background: '#ffffff', border: '1px solid var(--border-color)', padding: '0.75rem 0.5rem', borderRadius: '12px', textAlign: 'center', boxShadow: 'var(--shadow-sm)' }}>
-                  <span style={{ fontSize: '0.62rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', display: 'block' }}>Massa Grassa</span>
-                  <strong style={{ fontSize: '1.1rem', color: '#f43f5e', display: 'block', margin: '0.2rem 0' }}>
-                    {patient?.bia?.fatMass ? `${patient.bia.fatMass}%` : '--'}
-                  </strong>
-                </div>
-                <div style={{ background: '#ffffff', border: '1px solid var(--border-color)', padding: '0.75rem 0.5rem', borderRadius: '12px', textAlign: 'center', boxShadow: 'var(--shadow-sm)' }}>
-                  <span style={{ fontSize: '0.62rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', display: 'block' }}>Massa Muscolare</span>
-                  <strong style={{ fontSize: '1.1rem', color: '#10b981', display: 'block', margin: '0.2rem 0' }}>
-                    {patient?.bia?.muscleMass ? `${patient.bia.muscleMass} kg` : '--'}
-                  </strong>
-                </div>
-              </div>
-
-              {/* Card Motivazionale basata sull'andamento */}
-              {(() => {
-                const insight = getMotivationalInsight();
-                return (
-                  <div className="glass-card" style={{ 
-                    padding: '1.5rem', 
-                    marginBottom: '1.5rem', 
-                    borderLeft: `5px solid ${insight.color}`,
-                    background: 'rgba(255, 255, 255, 0.65)',
-                    backdropFilter: 'blur(10px)',
-                    boxShadow: 'var(--shadow-sm)',
-                    animation: 'modalSlide 0.3s ease'
-                  }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.75rem' }}>
-                      <span style={{ fontSize: '1.35rem' }}>{insight.icon}</span>
-                      <h4 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, color: 'var(--primary)' }}>
-                        {insight.title}
-                      </h4>
-                    </div>
-                    <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-main)', lineHeight: 1.5 }} dangerouslySetInnerHTML={{ __html: insight.text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') }} />
-                    
-                    <div style={{ 
-                      marginTop: '0.85rem', 
-                      paddingTop: '0.75rem', 
-                      borderTop: '1px solid var(--border-soft)', 
-                      fontSize: '0.74rem', 
-                      color: 'var(--text-muted)', 
-                      fontStyle: 'italic',
-                      lineHeight: 1.3
-                    }}>
-                      💡 Ricorda: la salute e la ricomposizione corporea non si misurano solo in chili sulla bilancia, ma in energia, forza, vestibilità dei vestiti e benessere quotidiano. Sii gentile con il tuo corpo nel suo percorso unico!
-                    </div>
-                  </div>
-                );
-              })()}
-
-              {/* Card Diario Emozionale (Non-Scale Victories) */}
-              <div className="glass-card" style={{ 
-                padding: '1.5rem', 
-                marginBottom: '1.5rem', 
-                background: 'rgba(255, 255, 255, 0.75)',
-                border: '1px solid var(--border-soft)',
-                boxShadow: 'var(--shadow-md)',
-                animation: 'modalSlide 0.4s ease'
-              }}>
-                <h4 style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--primary)', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                  🌸 Come ti senti oggi?
-                </h4>
-                <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', marginBottom: '1.25rem', lineHeight: 1.45 }}>
-                  Le vere vittorie si misurano in energia, sorriso e libertà. Condividi il tuo <strong>Non-Scale Victory</strong> del giorno!
-                </p>
-
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
-                  {[
-                    { id: 'great', emoji: '🤩', label: 'Benissimo' },
-                    { id: 'good', emoji: '😊', label: 'Bene' },
-                    { id: 'okay', emoji: '😌', label: 'Normale' },
-                    { id: 'tired', emoji: '🥱', label: 'Stanca/o' },
-                    { id: 'bad', emoji: '😔', label: 'Giù di morale' }
-                  ].map(m => (
-                    <button 
-                      key={m.id}
-                      onClick={() => setPatientMood(m.id)}
-                      style={{ 
-                        all: 'unset', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.4rem',
-                        opacity: patientMood === m.id ? 1 : (patientMood ? 0.4 : 1),
-                        transform: patientMood === m.id ? 'scale(1.15)' : 'scale(1)',
-                        transition: 'all 0.3s ease'
-                      }}
-                    >
-                      <span style={{ fontSize: '1.7rem', filter: patientMood === m.id ? 'drop-shadow(0 4px 6px rgba(214,51,132,0.3))' : 'none' }}>{m.emoji}</span>
-                      <span style={{ fontSize: '0.65rem', fontWeight: 700, color: patientMood === m.id ? 'var(--primary)' : 'var(--text-muted)' }}>{m.label}</span>
-                    </button>
-                  ))}
-                </div>
-
-                <form onSubmit={handleSaveMood} style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                  <textarea 
-                    className="form-input"
-                    rows="2"
-                    placeholder="Scrivi qui i tuoi pensieri liberi, i traguardi o come ti senti..."
-                    style={{ padding: '0.75rem', fontSize: '0.85rem', resize: 'none', borderRadius: '12px' }}
-                    value={patientMoodText}
-                    onChange={(e) => setPatientMoodText(e.target.value)}
-                  />
-                  <button 
-                    type="submit" 
-                    className="btn btn-primary"
-                    style={{ padding: '0.6rem', borderRadius: '12px', fontSize: '0.85rem', fontWeight: 700, boxShadow: 'var(--shadow-sm)' }}
-                  >
-                    Salva nel Diario Segreto
-                  </button>
-                </form>
-
-                {patientMoodMsg && (
-                  <div style={{ marginTop: '1rem', padding: '0.75rem', borderRadius: '10px', fontSize: '0.8rem', fontWeight: 600, textAlign: 'center', background: 'var(--color-veg-bg)', color: '#065f46', animation: 'fadeIn 0.3s ease' }}>
-                    {patientMoodMsg}
-                  </div>
-                )}
-              </div>
-
-              {/* Card Inserimento Rilevazione Paziente */}
-              <div className="glass-card" style={{ 
-                padding: '1.25rem', 
-                marginBottom: '1.5rem', 
-                background: 'rgba(255, 255, 255, 0.4)',
-                border: '1px solid var(--border-soft)',
-                boxShadow: 'var(--shadow-sm)'
-              }}>
-                <h4 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--primary)', marginBottom: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                  ⚖️ Registra il tuo Peso (Opzionale)
-                </h4>
-                <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '1.25rem', lineHeight: 1.45, borderLeft: '3px solid var(--primary)', paddingLeft: '0.75rem' }}>
-                  ℹ️ Ricorda: <strong>Il peso non ti definisce.</strong> Le oscillazioni sono fisiologiche. Inseriscilo solo se te la senti e non farti condizionare dai numeri!
-                </p>
-
-                <form onSubmit={handlePatientAddHistoryRecord} style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', alignItems: 'flex-end' }}>
-                  <div style={{ flex: '1 1 150px' }}>
-                    <label style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', display: 'block', marginBottom: '0.25rem' }}>Data</label>
-                    <input 
-                      type="date"
-                      className="form-input"
-                      style={{ padding: '0.45rem', fontSize: '0.82rem', width: '100%', height: '38px' }}
-                      required
-                      value={patientHistoryDate}
-                      onChange={(e) => setPatientHistoryDate(e.target.value)}
-                    />
-                  </div>
-
-                  <div style={{ flex: '1 1 150px' }}>
-                    <label style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', display: 'block', marginBottom: '0.25rem' }}>Peso (kg)</label>
-                    <input 
-                      type="number"
-                      step="0.1"
-                      className="form-input"
-                      style={{ padding: '0.45rem', fontSize: '0.82rem', width: '100%', height: '38px' }}
-                      placeholder="Es. 61.2"
-                      required
-                      value={patientHistoryWeight}
-                      onChange={(e) => setPatientHistoryWeight(e.target.value)}
-                    />
-                  </div>
-
-                  <button 
-                    type="submit" 
-                    className="btn btn-primary"
-                    style={{ 
-                      padding: '0.5rem 1.25rem', 
-                      borderRadius: '10px', 
-                      fontSize: '0.85rem', 
-                      height: '38px', 
-                      fontWeight: 700,
-                      flex: '1 1 150px',
-                      boxShadow: 'var(--shadow-sm)'
-                    }}
-                  >
-                    Salva Peso
-                  </button>
-                </form>
-
-                {patientWeightMsg && (
-                  <div style={{ 
-                    marginTop: '0.75rem', 
-                    padding: '0.5rem', 
-                    borderRadius: '8px', 
-                    fontSize: '0.78rem', 
-                    fontWeight: 650,
-                    textAlign: 'center',
-                    background: '#ecfdf5', 
-                    color: '#065f46',
-                    border: '1px solid #a7f3d0'
-                  }}>
-                    {patientWeightMsg}
-                  </div>
-                )}
-              </div>
-
-              {/* Grafici di Andamento */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', marginBottom: '1.5rem' }}>
-                {renderSvgChart(patient?.history || [], 'weight', 'Andamento Peso', '#d63384', ' kg', 2, 2)}
-                {renderSvgChart(patient?.history || [], 'fatMass', 'Andamento Massa Grassa', '#f43f5e', '%', 1.5, 1.5)}
-                {renderSvgChart(patient?.history || [], 'muscleMass', 'Andamento Massa Muscolare', '#10b981', ' kg', 2, 2)}
-              </div>
-
-              {/* Tabella Storico del Paziente */}
-              <div className="glass-card" style={{ padding: '1.25rem' }}>
-                <h4 style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--primary)', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                  📋 Registro Rilevazioni Storiche
-                </h4>
-                {!(patient?.history?.length > 0) ? (
-                  <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontStyle: 'italic', margin: 0 }}>
-                    Nessuna misurazione registrata.
+              {/* 🧠 Nuova Sezione Mindset & Emozioni */}
+              <div style={{ padding: '1.5rem', paddingBottom: '7rem' }}>
+                
+                {/* Intestazione */}
+                <div style={{ marginBottom: '1.5rem' }}>
+                  <h2 style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--text-main)', letterSpacing: '-0.5px', marginBottom: '0.5rem' }}>
+                    Spazio Mindset 🧠
+                  </h2>
+                  <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', lineHeight: 1.4, margin: 0 }}>
+                    Qui non ci sono bilance né giudizi. Coltiva la consapevolezza, gestisci la fame emotiva e ritrova l'equilibrio.
                   </p>
-                ) : (
-                  <div style={{ overflowX: 'auto', border: '1px solid var(--border-soft)', borderRadius: '10px' }}>
-                    <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem', background: '#fff', textAlign: 'left' }}>
-                      <thead>
-                        <tr style={{ background: 'var(--primary-bg)', borderBottom: '1px solid var(--border-color)', color: 'var(--primary)' }}>
-                          <th style={{ padding: '0.5rem 0.75rem', fontWeight: 700 }}>Data</th>
-                          <th style={{ padding: '0.5rem 0.75rem', fontWeight: 700 }}>Peso</th>
-                          <th style={{ padding: '0.5rem 0.75rem', fontWeight: 700 }}>Massa Grassa</th>
-                          <th style={{ padding: '0.5rem 0.75rem', fontWeight: 700 }}>Massa Muscolare</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {[...patient.history].sort((a,b) => new Date(b.date) - new Date(a.date)).map((r, idx) => (
-                          <tr key={idx} style={{ borderBottom: '1px solid var(--border-soft)' }}>
-                            <td style={{ padding: '0.5rem 0.75rem', fontWeight: 600 }}>
-                              {new Date(r.date).toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit', year: 'numeric' })}
-                            </td>
-                            <td style={{ padding: '0.5rem 0.75rem' }}>{r.weight} kg</td>
-                            <td style={{ padding: '0.5rem 0.75rem', color: '#f43f5e' }}>{r.fatMass}%</td>
-                            <td style={{ padding: '0.5rem 0.75rem', color: '#10b981' }}>{r.muscleMass} kg</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                </div>
+
+                {/* Pulsante SOS Fame Nervosa */}
+                <button 
+                  onClick={() => {
+                    alert("Apertura esercizio di respirazione guidata (Box Breathing 4-4-4-4)... respira profondamente.");
+                  }}
+                  className="glass-card" 
+                  style={{ 
+                    all: 'unset', 
+                    width: '100%', 
+                    boxSizing: 'border-box',
+                    padding: '1.25rem', 
+                    borderRadius: '20px', 
+                    background: 'linear-gradient(135deg, #f43f5e 0%, #be123c 100%)', 
+                    color: '#fff', 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    gap: '1rem', 
+                    cursor: 'pointer',
+                    boxShadow: '0 8px 24px rgba(244, 63, 94, 0.3)',
+                    marginBottom: '1.5rem'
+                  }}
+                >
+                  <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'rgba(255,255,255,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', flexShrink: 0 }}>
+                    🚨
                   </div>
-                )}
+                  <div style={{ flex: 1 }}>
+                    <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, color: '#fff', marginBottom: '0.1rem' }}>SOS Fame Emotiva</h3>
+                    <p style={{ margin: 0, fontSize: '0.8rem', color: 'rgba(255,255,255,0.9)' }}>Clicca qui per un esercizio di calma guidato</p>
+                  </div>
+                </button>
+
+                {/* Esercizi Mindful Eating */}
+                <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--text-main)', marginBottom: '1rem' }}>Pratiche di Consapevolezza</h3>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '1rem', marginBottom: '2rem' }}>
+                  <div className="glass-card" style={{ padding: '1rem', display: 'flex', alignItems: 'center', gap: '1rem', background: '#fff' }}>
+                    <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'var(--color-prot-bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', flexShrink: 0 }}>🎧</div>
+                    <div style={{ flex: 1 }}>
+                      <h4 style={{ margin: 0, fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-main)' }}>Riconoscere la Sazietà</h4>
+                      <p style={{ margin: 0, fontSize: '0.75rem', color: 'var(--text-muted)' }}>Audio guida di 3 minuti prima del pasto</p>
+                    </div>
+                    <button className="btn btn-primary" style={{ padding: '0.4rem 0.8rem', fontSize: '0.75rem' }}>Play</button>
+                  </div>
+                  
+                  <div className="glass-card" style={{ padding: '1rem', display: 'flex', alignItems: 'center', gap: '1rem', background: '#fff' }}>
+                    <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'var(--color-carb-bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', flexShrink: 0 }}>🧘‍♀️</div>
+                    <div style={{ flex: 1 }}>
+                      <h4 style={{ margin: 0, fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-main)' }}>L'esercizio dei 5 sensi</h4>
+                      <p style={{ margin: 0, fontSize: '0.75rem', color: 'var(--text-muted)' }}>Rallenta e gusta davvero ciò che mangi</p>
+                    </div>
+                    <button className="btn btn-outline" style={{ padding: '0.4rem 0.8rem', fontSize: '0.75rem' }}>Leggi</button>
+                  </div>
+                </div>
+
+                {/* Diario delle Emozioni & Gratitudine */}
+                <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--text-main)', marginBottom: '1rem' }}>Diario del Benessere</h3>
+                <div className="glass-card" style={{ padding: '1.25rem', background: '#fff' }}>
+                  <h4 style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--primary)', marginBottom: '0.5rem' }}>
+                    Come ti senti oggi?
+                  </h4>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
+                    {[
+                      { id: 'great', emoji: '🤩', label: 'Benissimo' },
+                      { id: 'good', emoji: '😊', label: 'Bene' },
+                      { id: 'okay', emoji: '😌', label: 'Normale' },
+                      { id: 'tired', emoji: '🥱', label: 'Stanca/o' },
+                      { id: 'bad', emoji: '😔', label: 'Ansiosa/o' }
+                    ].map(m => (
+                      <button 
+                        key={m.id}
+                        onClick={() => setPatientMood(m.id)}
+                        style={{ 
+                          all: 'unset', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.4rem',
+                          opacity: patientMood === m.id ? 1 : (patientMood ? 0.4 : 1),
+                          transform: patientMood === m.id ? 'scale(1.15)' : 'scale(1)',
+                          transition: 'all 0.3s ease'
+                        }}
+                      >
+                        <span style={{ fontSize: '1.6rem', filter: patientMood === m.id ? 'drop-shadow(0 4px 6px rgba(214,51,132,0.3))' : 'none' }}>{m.emoji}</span>
+                        <span style={{ fontSize: '0.65rem', fontWeight: 700, color: patientMood === m.id ? 'var(--primary)' : 'var(--text-muted)' }}>{m.label}</span>
+                      </button>
+                    ))}
+                  </div>
+
+                  <form onSubmit={handleSaveMood} style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                    <div style={{ background: 'var(--bg-primary)', borderRadius: '12px', padding: '0.75rem', border: '1px solid var(--border-soft)' }}>
+                      <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '0.4rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                        🙏 Diario della Gratitudine
+                      </label>
+                      <textarea 
+                        className="form-input"
+                        rows="2"
+                        placeholder="Scrivi una piccola cosa per cui sei grata oggi..."
+                        style={{ padding: '0.5rem', fontSize: '0.85rem', resize: 'none', background: 'transparent', border: 'none', width: '100%' }}
+                        value={patientMoodText}
+                        onChange={(e) => setPatientMoodText(e.target.value)}
+                      />
+                    </div>
+                    <button 
+                      type="submit" 
+                      className="btn btn-primary"
+                      style={{ padding: '0.75rem', borderRadius: '12px', fontSize: '0.85rem', fontWeight: 700, width: '100%' }}
+                    >
+                      Salva Riflessione
+                    </button>
+                  </form>
+
+                  {patientMoodMsg && (
+                    <div style={{ marginTop: '1rem', padding: '0.75rem', borderRadius: '10px', fontSize: '0.8rem', fontWeight: 600, textAlign: 'center', background: 'var(--color-veg-bg)', color: '#065f46', animation: 'fadeIn 0.3s ease' }}>
+                      {patientMoodMsg}
+                    </div>
+                  )}
+                </div>
+
               </div>
 
             </div>
@@ -4234,56 +4091,82 @@ Contesto:
         </div>
       )}
 
-      {/* Bottom Navigation */}
+      {/* Floating Bottom Navigation */}
       {patient && (
-        <nav style={{
-          position: 'fixed',
-          bottom: 0,
-          left: 0,
-          right: 0,
-          background: 'rgba(255,255,255,0.95)',
-          backdropFilter: 'blur(20px)',
-          WebkitBackdropFilter: 'blur(20px)',
-          boxShadow: '0 -1px 0 rgba(0,0,0,0.08)',
-          display: 'flex',
-          justifyContent: 'space-around',
-          padding: '0.6rem 0.5rem',
-          paddingBottom: 'max(0.6rem, env(safe-area-inset-bottom))',
-          zIndex: 1000,
-          borderTop: '1px solid var(--border-color)',
-        }}>
-          {[
-            { id: 'home', icon: <Home size={24} />, label: 'Home' },
-            { id: 'diario', icon: <ChefHat size={24} />, label: 'Piano' },
-            { id: 'ai', icon: <Sparkles size={24} />, label: 'Chef AI' },
-            { id: 'progressi', icon: <Heart size={24} />, label: 'Diario' },
-          ].map(tab => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveSubTab(tab.id)}
-              style={{
-                all: 'unset',
-                cursor: 'pointer',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                gap: '3px',
-                color: activeSubTab === tab.id ? 'var(--primary)' : 'var(--text-muted)',
-                minWidth: '56px',
-                padding: '4px',
-                transition: 'color 0.2s ease'
-              }}
-            >
-              <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'transform 0.2s ease', transform: activeSubTab === tab.id ? 'scale(1.1)' : 'scale(1)' }}>
-                {React.cloneElement(tab.icon, { strokeWidth: activeSubTab === tab.id ? 2.5 : 1.8 })}
-              </span>
-              <span style={{ fontSize: '0.65rem', fontWeight: activeSubTab === tab.id ? 700 : 500, letterSpacing: '0.01em' }}>{tab.label}</span>
-              {activeSubTab === tab.id && (
-                <span style={{ width: '4px', height: '4px', borderRadius: '50%', background: 'var(--primary)', marginTop: '1px' }} />
-              )}
-            </button>
-          ))}
-        </nav>
+        <div style={{ position: 'fixed', bottom: '1.25rem', left: '1rem', right: '1rem', zIndex: 1000, display: 'flex', justifyContent: 'center' }}>
+          <nav style={{
+            background: 'rgba(20, 20, 22, 0.95)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
+            display: 'flex',
+            justifyContent: 'space-around',
+            padding: '0.6rem 1rem',
+            borderRadius: '100px',
+            width: '100%',
+            maxWidth: '400px',
+            border: '1px solid rgba(255,255,255,0.08)'
+          }}>
+            {[
+              { id: 'home', icon: <Home size={22} />, label: 'Home' },
+              { id: 'diario', icon: <ChefHat size={22} />, label: 'Piatto' },
+              { id: 'ai', icon: <Sparkles size={22} />, label: 'Chef AI' },
+              { id: 'progressi', icon: <Brain size={22} />, label: 'Mindset' },
+            ].map(tab => {
+              const isActive = activeSubTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveSubTab(tab.id)}
+                  style={{
+                    all: 'unset',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: '4px',
+                    color: isActive ? '#ffffff' : '#8E8E93',
+                    minWidth: '60px',
+                    padding: '6px 4px',
+                    transition: 'all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)',
+                    position: 'relative'
+                  }}
+                >
+                  <span style={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center', 
+                    transition: 'all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)', 
+                    transform: isActive ? 'translateY(-2px)' : 'translateY(0)'
+                  }}>
+                    {React.cloneElement(tab.icon, { strokeWidth: isActive ? 2.5 : 2 })}
+                  </span>
+                  <span style={{ 
+                    fontSize: '0.65rem', 
+                    fontWeight: isActive ? 700 : 500, 
+                    letterSpacing: '0.02em',
+                    opacity: isActive ? 1 : 0.8
+                  }}>
+                    {tab.label}
+                  </span>
+                  {isActive && (
+                    <span style={{ 
+                      position: 'absolute',
+                      top: 0,
+                      left: '50%',
+                      transform: 'translateX(-50%)',
+                      width: '36px',
+                      height: '36px',
+                      borderRadius: '50%',
+                      background: 'rgba(255,255,255,0.1)',
+                      zIndex: -1
+                    }} />
+                  )}
+                </button>
+              );
+            })}
+          </nav>
+        </div>
       )}
 
     </div>

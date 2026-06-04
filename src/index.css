@@ -21,7 +21,7 @@
   --bg-secondary:    #F5F4F0;   /* Crema leggermente più scura per sezioni */
   --bg-card:         #FFFFFF;   /* Card bianche pure */
   --bg-input:        #F8F7F5;
-  --bg-gradient:     #FAFAF8;
+  --bg-gradient:     linear-gradient(180deg, #FAFAF8 0%, #F5EAE0 50%, #EAD5C5 100%);
 
   /* ── Bordi — sottilissimi e neutri ── */
   --border-color:    rgba(0, 0, 0, 0.07);
@@ -97,8 +97,10 @@
 
 body {
   font-family: var(--font-sans);
-  background: var(--bg-primary);
-  color: var(--text-main);
+  background: var(--bg-gradient);
+  background-attachment: fixed;
+  color: var(--text-color);
+  -webkit-font-smoothing: antialiased;
   min-height: 100vh;
   line-height: 1.6;
   overflow-x: hidden;
@@ -120,10 +122,13 @@ body::before {
 ──────────────────────────────── */
 .glass-card {
   background: var(--bg-card);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
   border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
+  border-radius: 28px;
+  padding: 1.5rem;
   box-shadow: var(--shadow-sm);
-  transition: box-shadow 0.25s ease, transform 0.25s ease;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
   position: relative;
   z-index: 1;
 }
