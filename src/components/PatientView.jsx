@@ -590,13 +590,18 @@ export default function PatientView({ patients, onUpdatePatientSelections, onUpd
     const prog = getChallengeProgress();
     const updatedCompletedDays = { ...prog.completedDays };
     const currentWeekDays = [...(updatedCompletedDays[weekNumber] || [false, false, false, false, false, false, false])];
-    currentWeekDays[dayIndex] = !currentWeekDays[dayIndex];
+    
+    const isChecking = !currentWeekDays[dayIndex];
+    const todayStr = new Date().toISOString().split('T')[0];
+
+    currentWeekDays[dayIndex] = isChecking;
     updatedCompletedDays[weekNumber] = currentWeekDays;
     
     onUpdatePatientProfile(activePatientId, {
       challengeProgress: {
         ...prog,
-        completedDays: updatedCompletedDays
+        completedDays: updatedCompletedDays,
+        lastCompletedDate: isChecking ? todayStr : null
       }
     });
   };
@@ -3204,81 +3209,111 @@ Contesto:
                             gap: '1rem',
                             transition: 'all 0.3s ease'
                           }}>
-                            <div>
-                              <p style={{ margin: 0, fontSize: '0.8rem', color: isActiveDayCompleted ? 'var(--primary)' : 'var(--text-muted)', fontWeight: 700, marginBottom: '0.25rem' }}>
-                                🔥 Sfida di {dayLabels[selectedChallengeDay]}:
-                              </p>
-                              <p style={{ margin: 0, fontSize: '0.95rem', fontWeight: 600, color: 'var(--text-main)', lineHeight: 1.5 }}>
-                                {activeDayTaskText}
-                              </p>
-                              
-                              {currentCh.dailyExplanations && currentCh.dailyExplanations[selectedChallengeDay] && (
-                                <div style={{ 
-                                  marginTop: '1rem', 
-                                  padding: '1rem', 
-                                  background: 'linear-gradient(to right, rgba(214, 51, 132, 0.05), transparent)', 
-                                  borderLeft: '4px solid var(--primary)', 
-                                  borderRadius: '0 12px 12px 0' 
-                                }}>
-                                  <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--primary)', fontWeight: 700, marginBottom: '0.25rem' }}>
-                                    💡 Perché è importante?
-                                  </p>
-                                  <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-muted)', lineHeight: 1.5, fontStyle: 'italic' }}>
-                                    {currentCh.dailyExplanations[selectedChallengeDay]}
-                                  </p>
-                                </div>
-                              )}
-                            </div>
-
                             {(() => {
-                              const isPreviousDayCompleted = selectedChallengeDay === 0 || completedDaysArr[selectedChallengeDay - 1];
-                              const isNextDayCompleted = selectedChallengeDay < 6 && completedDaysArr[selectedChallengeDay + 1];
-                              const isLockedForCheck = !isActiveDayCompleted && !isPreviousDayCompleted;
-                              const isLockedForUncheck = isActiveDayCompleted && isNextDayCompleted;
+                              const todayStr = new Date().toISOString().split('T')[0];
+                              const hasCompletedTaskToday = prog.lastCompletedDate === todayStr;
+                              const firstUncheckedIndex = completedDaysArr.findIndex(v => !v);
+                              
+                              const isPastDay = isActiveDayCompleted;
+                              const isNextDay = selectedChallengeDay === (firstUncheckedIndex === -1 ? 7 : firstUncheckedIndex);
+                              const isFutureDay = !isPastDay && !isNextDay;
+                              
+                              const isLockedByCalendar = isNextDay && hasCompletedTaskToday;
+                              const isContentHidden = isFutureDay || isLockedByCalendar;
 
                               let btnText = isActiveDayCompleted ? "Completato! Annulla" : "Segna come completato";
                               let btnBg = isActiveDayCompleted ? 'var(--success)' : 'var(--primary)';
                               let btnShadow = isActiveDayCompleted ? '0 4px 12px rgba(22, 163, 74, 0.2)' : '0 4px 12px rgba(214, 51, 132, 0.2)';
                               let btnCursor = 'pointer';
+                              let isDisabled = false;
 
-                              if (isLockedForCheck) {
-                                btnText = "Completa il giorno precedente";
+                              if (isFutureDay) {
+                                btnText = "Completa prima i giorni precedenti";
                                 btnBg = 'var(--bg-secondary)';
                                 btnShadow = 'none';
                                 btnCursor = 'not-allowed';
-                              } else if (isLockedForUncheck) {
+                                isDisabled = true;
+                              } else if (isLockedByCalendar) {
+                                btnText = "Torna domani per sbloccare!";
+                                btnBg = 'var(--bg-secondary)';
+                                btnShadow = 'none';
+                                btnCursor = 'not-allowed';
+                                isDisabled = true;
+                              } else if (isActiveDayCompleted && firstUncheckedIndex !== -1 && selectedChallengeDay < firstUncheckedIndex - 1) {
                                 btnText = "Completato (Sblocca successivi per annullare)";
                                 btnBg = 'var(--success)';
                                 btnCursor = 'not-allowed';
+                                isDisabled = true;
                               }
 
                               return (
-                                <button
-                                  type="button"
-                                  disabled={isLockedForCheck || isLockedForUncheck}
-                                  onClick={() => handleToggleChallengeDay(currentCh.week, selectedChallengeDay)}
-                                  style={{
-                                    width: '100%',
-                                    padding: '0.85rem',
-                                    borderRadius: '14px',
-                                    border: 'none',
-                                    background: btnBg,
-                                    color: (isLockedForCheck && !isActiveDayCompleted) ? 'var(--text-muted)' : '#ffffff',
-                                    fontSize: '0.9rem',
-                                    fontWeight: 700,
-                                    cursor: btnCursor,
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    gap: '0.5rem',
-                                    transition: 'all 0.2s',
-                                    boxShadow: btnShadow,
-                                    opacity: (isLockedForCheck || isLockedForUncheck) ? 0.7 : 1
-                                  }}
-                                >
-                                  {isLockedForCheck ? <Lock size={18} /> : <CheckCircle size={18} />}
-                                  {btnText}
-                                </button>
+                                <>
+                                  <div>
+                                    <p style={{ margin: 0, fontSize: '0.8rem', color: isActiveDayCompleted ? 'var(--primary)' : 'var(--text-muted)', fontWeight: 700, marginBottom: '0.25rem' }}>
+                                      🔥 Sfida di {dayLabels[selectedChallengeDay]}:
+                                    </p>
+                                    
+                                    {isContentHidden ? (
+                                      <div style={{ padding: '2rem 1rem', textAlign: 'center', color: 'var(--text-muted)', background: 'var(--bg-main)', borderRadius: '12px', marginTop: '0.5rem' }}>
+                                        <Lock size={32} style={{ opacity: 0.3, marginBottom: '0.5rem' }} />
+                                        <p style={{ margin: 0, fontSize: '0.9rem', fontWeight: 600 }}>
+                                          {isLockedByCalendar ? "Hai già completato un traguardo oggi.\nLa prossima sfida si sbloccherà a mezzanotte!" : "Completa le sfide precedenti per scoprire questa."}
+                                        </p>
+                                      </div>
+                                    ) : (
+                                      <>
+                                        <p style={{ margin: 0, fontSize: '0.95rem', fontWeight: 600, color: 'var(--text-main)', lineHeight: 1.5 }}>
+                                          {activeDayTaskText}
+                                        </p>
+                                        
+                                        {currentCh.dailyExplanations && currentCh.dailyExplanations[selectedChallengeDay] && (
+                                          <div style={{ 
+                                            marginTop: '1rem', 
+                                            padding: '1rem', 
+                                            background: 'linear-gradient(to right, rgba(214, 51, 132, 0.05), transparent)', 
+                                            borderLeft: '4px solid var(--primary)', 
+                                            borderRadius: '0 12px 12px 0' 
+                                          }}>
+                                            <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--primary)', fontWeight: 700, marginBottom: '0.25rem' }}>
+                                              💡 Perché è importante?
+                                            </p>
+                                            <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-muted)', lineHeight: 1.5, fontStyle: 'italic' }}>
+                                              {currentCh.dailyExplanations[selectedChallengeDay]}
+                                            </p>
+                                          </div>
+                                        )}
+                                      </>
+                                    )}
+                                  </div>
+
+                                  <button
+                                    type="button"
+                                    disabled={isDisabled}
+                                    onClick={() => handleToggleChallengeDay(currentCh.week, selectedChallengeDay)}
+                                    style={{
+                                      width: '100%',
+                                      padding: '0.85rem',
+                                      borderRadius: '14px',
+                                      border: 'none',
+                                      background: btnBg,
+                                      color: (isDisabled && !isActiveDayCompleted) ? 'var(--text-muted)' : '#ffffff',
+                                      fontSize: '0.9rem',
+                                      fontWeight: 700,
+                                      cursor: btnCursor,
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      justifyContent: 'center',
+                                      gap: '0.5rem',
+                                      transition: 'all 0.2s',
+                                      boxShadow: btnShadow,
+                                      opacity: isDisabled ? 0.7 : 1,
+                                      marginTop: '1rem'
+                                    }}
+                                  >
+                                    {(isFutureDay || isLockedByCalendar) ? <Lock size={18} /> : <CheckCircle size={18} />}
+                                    {btnText}
+                                  </button>
+                                </>
                               );
                             })()}
                           </div>
