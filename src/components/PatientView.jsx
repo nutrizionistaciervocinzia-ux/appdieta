@@ -1729,7 +1729,7 @@ Contesto:
                 <div style={{ padding: '0 1.5rem', marginBottom: '1.5rem' }}>
                   <button
                     onClick={() => {
-                      setActiveSubTab('progressi');
+                      setActiveSubTab('sfide');
                       setSelectedChallengeWeek(getChallengeProgress().currentWeek);
                       setIsChallengeModalOpen(true);
                     }}
@@ -1833,7 +1833,7 @@ Contesto:
                 {/* Card Diario Emotivo */}
                 <div style={{ padding: '0 1.5rem' }}>
                   <button
-                    onClick={() => setActiveSubTab('progressi')}
+                    onClick={() => setActiveSubTab('mindset')}
                     style={{ all: 'unset', width: '100%', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '1rem', padding: '1.25rem', borderRadius: '20px', boxSizing: 'border-box', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-sm)', background: '#fff' }}
                   >
                     <div style={{ width: '52px', height: '52px', borderRadius: '14px', background: 'var(--color-fat-bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.4rem', flexShrink: 0 }}>
@@ -2758,7 +2758,7 @@ Contesto:
             </div>
           )}
 
-          {activeSubTab === 'progressi' && (
+          {activeSubTab === 'mindset' && (
             <div style={{ animation: 'modalSlide 0.3s ease' }}>
               
               {/* 🧠 Nuova Sezione Mindset & Emozioni */}
@@ -2985,8 +2985,13 @@ Contesto:
                     transform: scale(1.05);
                   }
                 `}</style>
+              </div>
+            </div>
+          )}
 
-                {/* CARD 0: PERCORSO 12 SETTIMANE DI SFIDE */}
+          {activeSubTab === 'sfide' && (
+            <div style={{ animation: 'modalSlide 0.3s ease', padding: '1.5rem', paddingBottom: '7rem' }}>
+              {/* CARD 0: PERCORSO 12 SETTIMANE DI SFIDE */}
                 <div className="glass-card" style={{ padding: '1.5rem', background: 'linear-gradient(135deg, rgba(214, 51, 132, 0.04) 0%, rgba(139, 92, 246, 0.04) 100%)', border: '1.5px solid var(--border-color)', borderRadius: '24px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '1.25rem' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', color: 'var(--primary)' }}>
@@ -4359,7 +4364,8 @@ Contesto:
               { id: 'home', icon: <Home size={22} />, label: 'Home' },
               { id: 'diario', icon: <ChefHat size={22} />, label: 'Piatto' },
               { id: 'ai', icon: <Sparkles size={22} />, label: 'Chef AI' },
-              { id: 'progressi', icon: <Brain size={22} />, label: 'Mindset' },
+              { id: 'sfide', icon: <Trophy size={22} />, label: 'Sfide' },
+              { id: 'mindset', icon: <Brain size={22} />, label: 'Mindset' },
             ].map(tab => {
               const isActive = activeSubTab === tab.id;
               return (
